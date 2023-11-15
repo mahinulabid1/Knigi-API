@@ -2,6 +2,7 @@ const express = require( 'express' );
 const mongoose = require ( 'mongoose' );
 const router = express.Router( );
 const app = express( );
+app.use(express.json());
 
 module.exports = { express, app, mongoose, router };
 
@@ -24,4 +25,5 @@ const url = "mongodb+srv://himahinulabid:DjYFI1UPxb5BRyJl@cluster0.kgeats8.mongo
 
 // ROUTE SETTING
 require('./src/routes/shopRoute');
+require('./src/routes/userRoute');
 // its like copy and paste 

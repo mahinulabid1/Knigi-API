@@ -26,4 +26,20 @@ const getUserInfo = async ( id ) => {
 
 }
 
-module.exports = { newUser, getUserInfo }
+
+const  updateUser = async ( id , data , option ) => {
+
+    try{
+        if ( option === undefined ) {
+            option = null;
+        }
+
+        await userModel.findByIdAndUpdate(id, data, option);
+    }
+
+    catch ( err ) {
+        console.log(err);
+    }
+}
+
+module.exports = { newUser, getUserInfo, updateUser }

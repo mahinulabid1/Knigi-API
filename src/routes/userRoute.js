@@ -1,5 +1,5 @@
 const { app } = require("../../index");
-const { newUser, getUserInfo } = require("../controller/userController");
+const { newUser, getUserInfo, updateUser } = require("../controller/userController");
 
 app
     .post("/api/v1/user/newUser", async (req, res) => {
@@ -23,6 +23,15 @@ app
     })
 
 app
-    .patch( "/api/v1/user" , ( req, res ) => {
+    .patch( "/api/v1/user" , async ( req, res ) => {
         const id = req.query.id; 
+        const data = req.body;
+        try{
+            let a = await updateUser(id, data);
+            console.log(a);
+            res.status(200).send(`User Updated `);
+        }
+        catch ( err ) {
+            console.log( err );
+        }
     })
