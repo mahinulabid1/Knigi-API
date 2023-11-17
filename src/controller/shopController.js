@@ -2,7 +2,7 @@
 //and do data operations
 
 const ShopModel = require ( '../model/shopModel' );
-const { mongoose } = require ( '../../index' ); 
+const { mongoose, generateUniqueKey, s3, app } = require ( '../../index' ); 
 
 const getAllShopItem = async () => {
 
@@ -31,11 +31,44 @@ const getItemById  = async ( id ) => {
 }
 
 
-const insertItem = async ( data ) => { // data has to be an object
+// function : uploads image to the AWS S3 bucket
+const imageInput = async ( imageData ) => {
+
+    try{
+        const uniqueKey = generateUniqueKey();
+
+        s3.putObject({
+            Body: imageData,
+            Key : `shopItem/${uniqueKey}.jpg`,
+            Bucket: 'knigiimagedb'
+        }, 
+        (err, data) => {
+            if(err) {
+                console.log(err);
+            }
+            else{
+                console.log("image uploaded successfully ");
+            }
+        })
+
+        return uniqueKey;
+    } 
+    
+    catch ( err ) {
+        console.log( err ) ;
+    }
+}
+
+
+// function: insert new item in mongodb, uploads image
+const insertItem = async ( data, imagedata ) => { // data has to be an object, body takes the image file using fs module
 
     try {
-        const testInsert = new ShopModel( data );
-        testInsert.save( );
+        let imageName = await imageInput(imagedata); // returns the unique key
+        let dataObj = JSON.parse(data);
+        dataObj.productImage = `${imageName}.jpg`;
+        const testInsert = new ShopModel( dataObj );
+        let x = await testInsert.save( );
     }
 
     catch ( err ) {

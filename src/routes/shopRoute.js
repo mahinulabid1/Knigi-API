@@ -1,7 +1,7 @@
-const { express, app, router } = require ( '../../index' );
-const { getAllShopItem, getItemById, insertItem, updateById, deleteById } = require ( '../controller/shopController');
+const { express, app, router, upload, s3 } = require ( '../../index' );
+const { getAllShopItem, getItemById, insertItem, updateById, deleteById} = require ( '../controller/shopController');
 app.use(express.json());
-
+const fs = require( 'fs' );
 
 //default routing
 app
@@ -35,8 +35,11 @@ app
         }
     }) 
     
+
+
     //UPDATE SHOP SPECIFIC ITEM
-    .patch("/api/v1/shoplist", async (req, res) => {
+app
+    .patch("/api/v1/shoplist" ,async (req, res) => {
         try{
             await updateById(req.query.id, req.body);
             res.status(200).send("updated");
@@ -50,12 +53,18 @@ app
 
 // CREATE NEW SHOP ITEM
 app
-    .post( "/api/v1/newShopItem", ( req, res ) =>{  
-        // console.log(req.body);
-        insertItem ( req.body ).then ( ( ) => { console.log( "item inserted" ) } );
-        res.status(200).contentType('application/json').send({message : "Data Successfully Inserted"});
+    .post( "/api/v1/newShopItem", upload.single('bookPicture') ,async ( req, res ) =>{  
 
-})
+        try{
+            let image = fs.readFileSync(`${__dirname}/../../upload/${req.file.filename}`);
+            await insertItem ( req.body.data, image );
+            res.status(200).contentType('application/json').send({message : "Data Successfully Inserted"});
+
+        }
+        catch ( err ) {
+            console.log( err );
+        }
+    })
 
 
 app
@@ -63,8 +72,6 @@ app
         await deleteById(req.query.id);
         res.status(200).send(`Deleted ${req.query.id}`);
     })
-
-
 
 
 app.listen( 8000 );

@@ -21,6 +21,10 @@ const InsertShopItemSchema = new mongoose.Schema(
         productSpecs : {
             type : String,
             required : true
+        },
+        productImage : {
+            type : String,
+            required : true
         }
     },
 
