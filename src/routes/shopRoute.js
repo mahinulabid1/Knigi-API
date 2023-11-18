@@ -1,5 +1,5 @@
 const { express, app, router, upload, s3 } = require ( '../../index' );
-const { getAllShopItem, getItemById, insertItem, updateById, deleteById} = require ( '../controller/shopController');
+const { getAllShopItem, getItemById, insertItem, updateById, deleteById, getShopItemInLimitation} = require ( '../controller/shopController');
 app.use(express.json());
 const fs = require( 'fs' );
 
@@ -26,9 +26,13 @@ app
             //ask for specific item with ID
             else if( query.id !== undefined) {
                 // route : http://localhost:8000/api/v1/shoplist?id=655087298290bc43b3f580a7  (mongodbID)
-                const data = await getItemById(query.id);
+                const data = await getItemById( query.id );
                 res.status( 200 ).json( data );
             }
+            else if( query.limit !== undefined ) {
+                const data = await getShopItemInLimitation(4);
+                res.status( 200 ).json( data );
+            } 
 
         } catch( err ) {
             console.log( err );

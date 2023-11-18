@@ -3,13 +3,21 @@
 
 const ShopModel = require ( '../model/shopModel' );
 const { mongoose, generateUniqueKey, s3, app } = require ( '../../index' ); 
-const { imageInput } = require('../AWS_S3/FileController');
+const { imageInput, readImage } = require('../AWS_S3/FileController');
 
+
+//GET ALL ITEM FROM THE DATABASE
 const getAllShopItem = async () => {
 
     try{
         const result = await ShopModel.find( { /* find all */ } );
-        return result;
+        let arr = [];
+        for(let i = 0; i < result.length; i++) {
+            // get image from s3
+            let imageData = await readImage( result[i].productImage );      // result[0].productImage , returns the image name
+            arr.push({info: result[i], image: imageData});
+        }
+        return arr;
     }
     
     catch ( err ) {
@@ -19,6 +27,39 @@ const getAllShopItem = async () => {
 }
 
 
+// GET ITEM USING OPTIONS LIKE LIMITING AND ORDER
+const getShopItemInLimitation = async ( limit ) => {        // limit's value should be number
+
+    try {
+
+        if( limit === undefined ) {
+            throw err('parameter not defined');
+        }
+        else if(limit !== undefined ) {
+
+            const result = await ShopModel.find( { /* find all */ } ).limit(limit);     // fetching data from MongoDB
+            let arr = [];
+
+            for(let i = 0; i < result.length; i++) {
+                // get image from s3
+                let imageData = await readImage( result[i].productImage );      // result[0].productImage , returns the image name
+                arr.push({info: result[i], image: imageData});
+            }
+
+            return arr;
+
+        }
+
+    }
+    
+    catch( err ) {
+
+    }
+    
+}
+
+
+// GET ONE ITEM BY ID
 const getItemById  = async ( id ) => {
 
     try{
@@ -76,4 +117,4 @@ const deleteById= async ( id ) => {
 
 
 
-module.exports = { getAllShopItem, getItemById, insertItem, updateById, deleteById };
+module.exports = { getAllShopItem, getItemById, insertItem, updateById, deleteById, getShopItemInLimitation };
