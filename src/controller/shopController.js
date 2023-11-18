@@ -3,6 +3,7 @@
 
 const ShopModel = require ( '../model/shopModel' );
 const { mongoose, generateUniqueKey, s3, app } = require ( '../../index' ); 
+const { imageInput } = require('../AWS_S3/FileController');
 
 const getAllShopItem = async () => {
 
@@ -31,41 +32,15 @@ const getItemById  = async ( id ) => {
 }
 
 
-// function : uploads image to the AWS S3 bucket
-const imageInput = async ( imageData ) => {
 
-    try{
-        const uniqueKey = generateUniqueKey();
-
-        s3.putObject({
-            Body: imageData,
-            Key : `shopItem/${uniqueKey}.jpg`,
-            Bucket: 'knigiimagedb'
-        }, 
-        (err, data) => {
-            if(err) {
-                console.log(err);
-            }
-            else{
-                console.log("image uploaded successfully ");
-            }
-        })
-
-        return uniqueKey;
-    } 
-    
-    catch ( err ) {
-        console.log( err ) ;
-    }
-}
 
 
 // function: insert new item in mongodb, uploads image
-const insertItem = async ( data, imagedata ) => { // data has to be an object, body takes the image file using fs module
+const insertItem = async ( data, imagedata ) => {       // data has to be an object, body takes the image file using fs module
 
     try {
-        let imageName = await imageInput(imagedata); // returns the unique key
-        let dataObj = JSON.parse(data);
+        let imageName = await imageInput(imagedata);    // returns the unique key
+        let dataObj = JSON.parse(data);                 // JSON data got from req.body.key
         dataObj.productImage = `${imageName}.jpg`;
         const testInsert = new ShopModel( dataObj );
         let x = await testInsert.save( );
