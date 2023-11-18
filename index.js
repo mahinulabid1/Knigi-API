@@ -1,13 +1,26 @@
 const express = require( 'express' );
+const cors = require( 'cors' );
 const mongoose = require ( 'mongoose' );
 const router = express.Router( );
 const bodyParser = require('body-parser');  // didn't find any use yet
 const AWS = require( 'aws-sdk' );
 const multer = require('multer');
 const app = express( );
-app.use(express.json());
+app.use(express.json());  
+// Enable CORS for all routes
+// const corsOptions = {
+//     origin: 'http://localhost:5173/', // Specify the allowed domain
+//     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+//     optionsSuccessStatus: 204,
+// };
+  
+// app.use(cors(corsOptions));                  // doesn't work when req is sent using form-data, not raw JSON
+app.use(cors());   
 
 const upload = multer({dest: 'upload/'});
+
+
+  
 
 
 // Set up AWS configuration
