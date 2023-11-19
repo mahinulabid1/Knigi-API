@@ -63,9 +63,11 @@ const insertItem = async ( data, imagedata ) => {       // data has to be an obj
         let imageName = await imageInput(imagedata);    // returns the unique key, upload image to S3 bucket
         let dataObj = JSON.parse(data);                 // JSON data got from req.body.key, app.use(express.json()) cant pase form-data
         dataObj.productImage = `${cloudFrontUrl}/shopItem/${imageName}.jpg`;
-        dataObj.ImageName = `${imageName}.jpg`
+        dataObj.imageName = `${imageName}.jpg`
+        console.log(dataObj.ImageName);
+        console.log(dataObj)
         const testInsert = new ShopModel( dataObj );
-        let x = await testInsert.save( );
+        await testInsert.save( );
     }
 
     catch ( err ) {

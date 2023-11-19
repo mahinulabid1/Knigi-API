@@ -8,9 +8,9 @@ const InsertShopItemSchema = new mongoose.Schema(
         },
 
         productPrice : {
-            regularPrice : String,
-            discountedPrice : String,
-            regularPriceBeforeDiscount : String
+            regularPrice : Number || null,
+            discountedPrice : Number || null,
+            regularPriceBeforeDiscount : Number || null
         },
 
         productAboutInfo : {
