@@ -35,9 +35,6 @@ const getAllShopItem = async ( limit ) => {
 }
 
 
-
-
-
 // GET ONE ITEM BY ID
 const getItemById  = async ( id ) => {
 
@@ -50,8 +47,6 @@ const getItemById  = async ( id ) => {
     }
 
 }
-
-
 
 
 
@@ -76,13 +71,14 @@ const insertItem = async ( data, imagedata ) => {       // data has to be an obj
     
 }
 
+
 // UPDATE SHOP ITEM
 const updateById = async (id, data, option) => {
     if( option === undefined) {
         option = null;
     }
 
-    await ShopModel.findByIdAndUpdate( id, data, option);
+    await ShopModel.findByIdAndUpdate( id, data, option);       // data = firstName: "john", change firstName field Value to "john"
     
 }
 
@@ -102,7 +98,7 @@ const deleteById= async ( id ) => {
             console.log("Log: Data is undefined. Aborting Image Deletion Operation");
         }
 
-        await ShopModel.deleteOne({_id: id}) // {"_id": id} this "" is wrong, I kept getting error
+        await ShopModel.deleteOne({_id: id})            // {"_id": id} this "" is wrong, I kept getting error
     }
     
     catch ( err ){ 
