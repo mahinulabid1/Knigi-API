@@ -5,9 +5,9 @@ const fs = require( 'fs' );
 
 //default routing
 app
-    .get ( "/", ( req, res ) => { 
+    .get ( "/", ( req, res ) => {
         res.status ( 200 ).send ( "This is Homepage" );
-})
+    })
 
 
 // GET ALL SHOP ITEM OR SINGLE ITEM BY ID
@@ -29,6 +29,8 @@ app
                 const data = await getItemById( query.id );
                 res.status( 200 ).json( data );
             }
+
+            //limiting the result 
             else if( query.limit !== undefined ) {
                 const data = await getShopItemInLimitation(4);
                 res.status( 200 ).json( data );

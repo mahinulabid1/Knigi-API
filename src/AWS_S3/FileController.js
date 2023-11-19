@@ -1,5 +1,22 @@
 const { generateUniqueKey, s3 } = require ( '../../index' ); 
 
+// function: takes an image array buffer and return Blog URL
+const BlogUrlGenerator = async ( ArrayBufferOfImage ) => {
+    // Assuming you have a buffer called 'imageBuffer'
+    const imageBuffer = ArrayBufferOfImage// Your Node.js buffer containing the image data
+
+    // Convert the buffer to a Base64-encoded string
+    const base64Image = Buffer.from(imageBuffer).toString('base64');
+
+    // Create a data URL
+    const imageUrl = `data:image/jpeg;base64,${base64Image}`;
+
+    console.log(imageUrl);
+
+    return  imageUrl;
+} 
+
+
 // function : uploads image to the AWS S3 bucket
 const imageInput = async ( imageData ) => {
 
@@ -58,8 +75,9 @@ const readImage = async ( filename ) => {
         })
     })
     
-    const imageData = await a;
-    return imageData;
+    const imageData = await a;              // returns array buffer of the image
+    const BlogUrl = BlogUrlGenerator(imageData);
+    return BlogUrl;
 }
 
 
