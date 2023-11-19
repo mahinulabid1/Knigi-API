@@ -7,17 +7,18 @@ const { imageInput, readImage } = require('../AWS_S3/FileController');
 
 
 //GET ALL ITEM FROM THE DATABASE
-const getAllShopItem = async () => {
+const getAllShopItem = async ( limit ) => {
 
     try{
-        const result = await ShopModel.find( { /* find all */ } );
-        let arr = [];
-        for(let i = 0; i < result.length; i++) {
-            // get image from s3
-            let imageData = await readImage( result[i].productImage );      // result[0].productImage , returns the image name
-            arr.push({info: result[i], image: imageData});
+        if(limit === undefined ) {
+            const result = await ShopModel.find( { /* find all */ } );
+            return result;
         }
-        return arr;
+        else if(limit !== undefined ) {
+            const result = await ShopModel.find( { /* find all */ } ).limit(limit);     // fetching data from MongoDB
+            return result;
+        }
+        
     }
     
     catch ( err ) {
@@ -27,36 +28,7 @@ const getAllShopItem = async () => {
 }
 
 
-// GET ITEM USING OPTIONS LIKE LIMITING AND ORDER
-const getShopItemInLimitation = async ( limit ) => {        // limit's value should be number
 
-    try {
-
-        if( limit === undefined ) {
-            throw err('parameter not defined');
-        }
-        else if(limit !== undefined ) {
-
-            const result = await ShopModel.find( { /* find all */ } ).limit(limit);     // fetching data from MongoDB
-            let arr = [];
-
-            for(let i = 0; i < result.length; i++) {
-                // get image from s3
-                let imageData = await readImage( result[i].productImage );      // result[0].productImage , returns the image name
-                arr.push({info: result[i], image: imageData});
-            }
-
-            return arr;
-
-        }
-
-    }
-    
-    catch( err ) {
-
-    }
-    
-}
 
 
 // GET ONE ITEM BY ID
@@ -77,11 +49,12 @@ const getItemById  = async ( id ) => {
 
 
 // function: insert new item in mongodb, uploads image
+// insert using form-data
 const insertItem = async ( data, imagedata ) => {       // data has to be an object, body takes the image file using fs module
 
     try {
         let imageName = await imageInput(imagedata);    // returns the unique key
-        let dataObj = JSON.parse(data);                 // JSON data got from req.body.key
+        let dataObj = JSON.parse(data);                 // JSON data got from req.body.key, app.use(express.json()) cant pase form-data
         dataObj.productImage = `${imageName}.jpg`;
         const testInsert = new ShopModel( dataObj );
         let x = await testInsert.save( );
