@@ -2,8 +2,15 @@
 //and do data operations
 
 const ShopModel = require ( '../model/shopModel' );
-const { mongoose, generateUniqueKey, s3, app } = require ( '../../index' ); 
-const { imageInput, readImage } = require('../AWS_S3/FileController');
+const { 
+    mongoose, 
+    generateUniqueKey, 
+    s3, 
+    app, 
+    cloudFrontUrl 
+} = require ( '../../index' );
+
+const { imageInput } = require('../AWS_S3/FileController');
 
 
 //GET ALL ITEM FROM THE DATABASE
@@ -53,9 +60,9 @@ const getItemById  = async ( id ) => {
 const insertItem = async ( data, imagedata ) => {       // data has to be an object, body takes the image file using fs module
 
     try {
-        let imageName = await imageInput(imagedata);    // returns the unique key
+        let imageName = await imageInput(imagedata);    // returns the unique key, upload image to S3 bucket
         let dataObj = JSON.parse(data);                 // JSON data got from req.body.key, app.use(express.json()) cant pase form-data
-        dataObj.productImage = `${imageName}.jpg`;
+        dataObj.productImage = `${cloudFrontUrl}/shopItem/${imageName}.jpg`;
         const testInsert = new ShopModel( dataObj );
         let x = await testInsert.save( );
     }
@@ -90,4 +97,4 @@ const deleteById= async ( id ) => {
 
 
 
-module.exports = { getAllShopItem, getItemById, insertItem, updateById, deleteById, getShopItemInLimitation };
+module.exports = { getAllShopItem, getItemById, insertItem, updateById, deleteById };

@@ -1,5 +1,20 @@
-const { express, app, router, upload, s3 } = require ( '../../index' );
-const { getAllShopItem, getItemById, insertItem, updateById, deleteById, getShopItemInLimitation} = require ( '../controller/shopController');
+const { 
+    express, 
+    app, 
+    router, 
+    upload, 
+    s3,
+    cloudFrontUrl
+} = require ( '../../index' );
+
+const { 
+    getAllShopItem, 
+    getItemById, 
+    insertItem, 
+    updateById, 
+    deleteById, 
+} = require ( '../controller/shopController');
+
 app.use(express.json());
 const fs = require( 'fs' );
 
@@ -19,7 +34,7 @@ app
 
             // send all shop item list
             if(query.id === undefined){
-                const data = await getAllShopItem();
+                const data = await getAllShopItem( query.limit );
                 res.status( 200 ).json( data );
             }
 
@@ -29,12 +44,6 @@ app
                 const data = await getItemById( query.id );
                 res.status( 200 ).json( data );
             }
-
-            //limiting the result 
-            else if( query.limit !== undefined ) {
-                const data = await getShopItemInLimitation(4);
-                res.status( 200 ).json( data );
-            } 
 
         } catch( err ) {
             console.log( err );
