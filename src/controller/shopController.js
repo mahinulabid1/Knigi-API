@@ -10,7 +10,7 @@ const {
     cloudFrontUrl 
 } = require ( '../../index' );
 
-const { imageInput } = require('../AWS_S3/FileController');
+const { imageInput, deleteImageFile } = require('../AWS_S3/FileController');
 
 
 //GET ALL ITEM FROM THE DATABASE
@@ -63,6 +63,7 @@ const insertItem = async ( data, imagedata ) => {       // data has to be an obj
         let imageName = await imageInput(imagedata);    // returns the unique key, upload image to S3 bucket
         let dataObj = JSON.parse(data);                 // JSON data got from req.body.key, app.use(express.json()) cant pase form-data
         dataObj.productImage = `${cloudFrontUrl}/shopItem/${imageName}.jpg`;
+        dataObj.ImageName = `${imageName}.jpg`
         const testInsert = new ShopModel( dataObj );
         let x = await testInsert.save( );
     }
@@ -87,6 +88,18 @@ const updateById = async (id, data, option) => {
 //DELETE SHOP ITEM
 const deleteById= async ( id ) => {
     try {
+        let data = await getItemById( id );
+        data = data.ImageName;
+
+        if(data !== undefined) {
+            console.log(data);
+            deleteImageFile( `shopItem/${data}`);
+            
+        }
+        else {
+            console.log("Log: Data is undefined. Aborting Image Deletion Operation");
+        }
+
         await ShopModel.deleteOne({_id: id}) // {"_id": id} this "" is wrong, I kept getting error
     }
     
