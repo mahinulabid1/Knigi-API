@@ -46,39 +46,6 @@ const imageInput = async ( imageData ) => {
 }
 
 
-const readImage = async ( filename ) => {
-
-    /* Resons for using Promise: 
-    - getObject use callback function to maintain its async function. 
-    - I can't "await" a callback function. It doesn't work.
-    - Because of this limitations I couldn't return the image that I got from S3
-    - So I created a Promise, that allowed me to use await
-    - 
-    */
-    let a = new Promise ( (resolve, reject ) => {
-
-        s3.getObject( {
-
-            Bucket : "knigiimagedb",
-            Key : `shopItem/${filename}`
-
-        } , 
-        
-        ( err, result ) => {
-
-            if( err ) {
-                reject( err );
-            } else { 
-                resolve ( result.Body ); 
-            }
-
-        })
-    })
-    
-    const imageData = await a;              // returns array buffer of the image
-    const BlogUrl = BlogUrlGenerator(imageData);
-    return BlogUrl;
-}
 
 
-module.exports = { imageInput, readImage }
+module.exports = { imageInput }
