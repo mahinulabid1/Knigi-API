@@ -8,9 +8,9 @@ const InsertShopItemSchema = new mongoose.Schema(
         },
 
         productPrice : {
-            regularPrice : Number,
-            discountedPrice : Number,
-            regularPriceBeforeDiscount : Number
+            regularPrice : String,
+            discountedPrice : String,
+            regularPriceBeforeDiscount : String
         },
 
         productAboutInfo : {
@@ -25,6 +25,9 @@ const InsertShopItemSchema = new mongoose.Schema(
         productImage : {
             type : String,
             required : true
+        },
+        ImageName : {
+            type : String
         }
     },
 
