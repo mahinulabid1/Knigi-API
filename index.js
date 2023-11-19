@@ -33,6 +33,8 @@ AWS.config.update({
 // initialize s3
 const s3 = new AWS.S3();
 
+const cloudFrontUrl = 'https://d19a566nyr3opx.cloudfront.net';
+
 
 // unique key generator
 function generateUniqueKey() {
@@ -43,7 +45,17 @@ function generateUniqueKey() {
     return `${timestamp}-${randomStr}-${hash}`;
 }
 
-module.exports = { express, app, mongoose, router, s3, generateUniqueKey, bodyParser, upload };
+module.exports = { 
+    express,
+    app, 
+    mongoose, 
+    router, 
+    s3, 
+    generateUniqueKey, 
+    bodyParser, 
+    upload ,
+    cloudFrontUrl
+};
 
 const url = "mongodb+srv://himahinulabid:DjYFI1UPxb5BRyJl@cluster0.kgeats8.mongodb.net/Knigi?retryWrites=true&w=majority";
 
