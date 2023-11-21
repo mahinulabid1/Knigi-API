@@ -22,12 +22,16 @@ const InsertShopItemSchema = new mongoose.Schema(
             type : String,
             required : true
         },
-        productImage : {
-            type : String,
-            required : true
-        },
-        imageName : {
-            type : String       // it is needed for deleting the image later from S3
+
+        imageCollection : {
+            productImage: {
+                url : String,
+                imageName : String
+            },
+            thumbnail : {
+                url : String,
+                imageName :String
+            }
         }
     },
 

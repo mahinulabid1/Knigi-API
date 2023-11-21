@@ -67,12 +67,27 @@ app
 
 
 // CREATE NEW SHOP ITEM
+const fileFields = [
+    {
+        name : 'bookPicture',
+        maxCount : 1
+    },
+    {
+        name : 'thumbnail',
+        maxCount : 1
+    }
+]
 app
-    .post( "/api/v1/newShopItem", upload.single('bookPicture') ,async ( req, res ) =>{  
+    .post( "/api/v1/newShopItem", upload.fields(fileFields) ,async ( req, res ) =>{  
 
         try{
-            let image = fs.readFileSync(`${__dirname}/../../upload/${req.file.filename}`);
-            await insertItem ( req.body.data, image );
+            // INFO: req.fields give an array containing multiple object
+            // INFO: to acces filename = req.files.keyname[0].filename 
+            let productImage = fs.readFileSync(`${__dirname}/../../upload/${req.files.bookPicture[0].filename}`);
+            let thumbnail = fs.readFileSync(`${__dirname}/../../upload/${req.files.thumbnail[0].filename}`);
+
+            await insertItem ( req.body.data, productImage, thumbnail );    // it must return productImage first and thumbnail image later
+            // console.log(req.files.bookPicture[0].filename);
             res.status(200).contentType('application/json').send({message : "Data Successfully Inserted"});
 
         }

@@ -16,12 +16,12 @@ const { imageInput, deleteImageFile } = require('../AWS_S3/FileController');
 //GET ALL ITEM FROM THE DATABASE
 const getAllShopItem = async ( limit ) => {
 
-    try{
-        if(limit === undefined ) {
+    try {
+        if ( limit === undefined ) {
             const result = await ShopModel.find( { /* find all */ } );
             return result;
         }
-        else if(limit !== undefined ) {
+        else if ( limit !== undefined ) {
             const result = await ShopModel.find( { /* find all */ } ).limit(limit);     // fetching data from MongoDB
             return result;
         }
@@ -49,18 +49,47 @@ const getItemById  = async ( id ) => {
 }
 
 
+// class DataInsertion {
+//     constructor(data, productImage, thumbnailImage) {
+//         this.data = data;   // binding class argument to class object : I know, doesn't make sense
+//         this.productImage = productImage;
+//         this.thumbnailImage = thumbnailImage;
+//     }
+
+//     imageUpload() {
+
+//     }
+// }
+
+// NEED FUNCTION TO UPLOAD TWO IMAGES ASYNCRONOUSLY 
+const imageUpload = (productImage, thumbnailImage) => {
+    return new Promise( (resolve, reject) => {
+        let product = imageInput(productImage);   // returns the unique key/name for the image, upload image to S3 bucket
+        let thumbnail = imageInput(thumbnailImage)
+
+        resolve([product, thumbnail]);
+    })
+}
+
 
 // function: insert new item in mongodb, uploads image
 // insert using form-data
-const insertItem = async ( data, imagedata ) => {       // data has to be an object, body takes the image file using fs module
+const insertItem = async ( data, productImage, thumbnailImage ) => {       // data has to be an object, (productImage,thumbnailImage) takes the image file using fs module
 
     try {
-        let imageName = await imageInput(imagedata);    // returns the unique key, upload image to S3 bucket
+        let [product, thumbnail] = await imageUpload(productImage, thumbnailImage);    // returns the unique key/name for the image, upload image to S3 bucket
         let dataObj = JSON.parse(data);                 // JSON data got from req.body.key, app.use(express.json()) cant pase form-data
-        dataObj.productImage = `${cloudFrontUrl}/shopItem/${imageName}.jpg`;
-        dataObj.imageName = `${imageName}.jpg`
-        console.log(dataObj.ImageName);
-        console.log(dataObj)
+        console.log(dataObj);
+
+        // Putting more information(of Images) by following Mongoose Schema Model
+        dataObj.imageCollection = {};
+        dataObj.imageCollection.productImage = {};
+        dataObj.imageCollection.thumbnail = {};
+        dataObj.imageCollection.productImage.url = `${cloudFrontUrl}/shopItem/${product}.jpg`;
+        dataObj.imageCollection.productImage.imageName = `${product}.jpg`;
+        dataObj.imageCollection.thumbnail.url = `${cloudFrontUrl}/shopItem/${thumbnail}.jpg`;
+        dataObj.imageCollection.thumbnail.imageName = `${thumbnail}.jpg`;
+
         const testInsert = new ShopModel( dataObj );
         await testInsert.save( );
     }

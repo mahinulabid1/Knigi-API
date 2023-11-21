@@ -9,7 +9,7 @@ const imageInput = async ( imageData ) => {
 
         s3.putObject({
             Body: imageData,
-            Key : `shopItem/${uniqueKey}.jpg`,
+            Key : `shopItem/${uniqueKey}.jpg`,  // do not start with "/", it will create a file with name "/"
             Bucket: 'knigiimagedb',
             ACL: "public-read",
         }, 
@@ -20,7 +20,9 @@ const imageInput = async ( imageData ) => {
             else{
                 console.log("image uploaded successfully ");
             }
-        })
+        });
+
+        
 
         return uniqueKey;
     } 
