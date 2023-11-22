@@ -13,12 +13,16 @@ const {
     // insertItem, 
     updateById, 
     deleteById, 
-    UploadFile,
+    // UploadFile,
     UploadData
 } = require ( '../controller/shopController');
 
+const { UploadFile } = require( '../AWS_S3/FileController' );
+
 app.use(express.json());
 const fs = require( 'fs' );
+const uploadFile = new UploadFile();
+const uploadData = new UploadData();
 
 //default routing
 app
@@ -87,8 +91,7 @@ app
             const image2 = req.files.thumbnail[0].filename;
             const bodyData = req.body.data;
 
-            const uploadFile = new UploadFile();
-            const uploadData = new UploadData();
+
             const productImage = uploadFile.image(image1, "shopItem");      // returns name of uploaded image
             const thumbnailImage = uploadFile.image(image2, "shopItem");    // returns name of uploaded image
             

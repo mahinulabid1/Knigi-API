@@ -1,7 +1,48 @@
 const { generateUniqueKey, s3 } = require ( '../../index' ); 
-
+const fs = require( 'fs' );
 
 // function : uploads image to the AWS S3 bucket
+class UploadFile {
+    constructor() {
+        this.executionTime = undefined;
+    }
+
+    image( filename, uploadDestination ) {
+        // input: filename sent by req.files, accepts = "string"
+        const imageFile = fs.readFileSync(`${__dirname}/../../upload/${filename}`);
+        const uniqueKey =  generateUniqueKey();
+
+        const uploadExecStart = Date.now();
+        s3.putObject({
+
+            Body: imageFile,
+            Key : `${uploadDestination}/${uniqueKey}.jpg`,  // do not start with "/", it will create a file with name "/"
+            Bucket: 'knigiimagedb',
+            ACL: "public-read",
+
+        }, ( err ) => {
+            if( err ) {
+                console.log( err ) 
+            } else{
+                this.uploadStatus = "Log: S3 Image Upload Successfully completed.";
+                const uploadExecEnd = Date.now();
+                this.executionTime = uploadExecEnd -uploadExecStart;
+                console.log(`File upload Successful. Time took: ${ this.executionTime }ms`);
+            } 
+        });
+
+        const FileName = `${uniqueKey}.jpg`;
+        return FileName;
+
+    }
+
+
+    runDebug() {
+
+    }
+}
+
+
 const imageInput = async ( imageData ) => {
 
     try{
@@ -56,4 +97,4 @@ const deleteImageFile = async ( imageSource ) => {      // imageSource must cont
 }
 
 
-module.exports = { imageInput, deleteImageFile }
+module.exports = { imageInput, deleteImageFile, UploadFile }
