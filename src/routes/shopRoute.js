@@ -14,7 +14,8 @@ const {
     updateById, 
     deleteById, 
     // UploadFile,
-    UploadData
+    UploadData,
+    GetData
 } = require ( '../controller/shopController');
 
 const { UploadFile } = require( '../AWS_S3/FileController' );
@@ -23,7 +24,7 @@ app.use(express.json());
 const fs = require( 'fs' );
 const uploadFile = new UploadFile();
 const uploadData = new UploadData();
-
+const fetchData = new GetData();
 //default routing
 app
     .get ( "/", ( req, res ) => {
@@ -40,14 +41,14 @@ app
 
             // send all shop item list
             if(query.id === undefined){
-                const data = await getAllShopItem( query.limit );
+                const data = await fetchData.allShopItem( query.limit );
                 res.status( 200 ).json( data );
             }
 
             //ask for specific item with ID
             else if( query.id !== undefined) {
                 // route : http://localhost:8000/api/v1/shoplist?id=655087298290bc43b3f580a7  (mongodbID)
-                const data = await getItemById( query.id );
+                const data = await await fetchData.getItemById( query.id );
                 res.status( 200 ).json( data );
             }
 

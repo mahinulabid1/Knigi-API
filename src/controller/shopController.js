@@ -48,6 +48,55 @@ class UploadData {
 
 
 
+class GetData {
+    constructor() {
+
+    }
+
+    async allShopItem ( limit ) {
+        if( limit === undefined ) {
+            limit = null;
+        }
+        const data = await ShopModel.find( { /* find all */ } ).limit(limit);
+        return data;
+    }
+
+    async getItemById ( id ){
+        const data = await ShopModel.findById( id );
+        result === null ? result = 'No data found!' : console.info(`Data Fetching Complete`);
+        return data;
+    }
+}
+
+
+class UpdateDB {
+    constructor( ) {
+        this.executionDuration = undefined;
+    }
+
+    async updateById (id, data, option)  {
+
+        // error handling
+        if( id === undefined ) {
+            console.error ( 'id is not defined updateById(id, data, option)' );
+        } else if( data === undefined ) {
+            console.error ( 'data is not defined in updateById(id, data, option)' );
+        } else if( id === undefined && data === undefined ) {
+            console.error ( 'data & id is not defined in updateById(id, data, option)')
+        }
+        
+        option === undefined ? option = null : option = option;
+        const execStartTime = Date.now();
+        await ShopModel.findByIdAndUpdate( id, data, option);       // data = firstName: 'john', change firstName field Value to 'john'
+        const execEndTime = Date.now();
+        this.executionDuration = execEndTime - execStartTime;
+        console.info(` Data dated successfully. Took time: ${this.executionDuration}ms`);
+    }
+
+}
+
+
+
 
 
 //GET ALL ITEM FROM THE DATABASE
@@ -94,7 +143,7 @@ const updateById = async (id, data, option) => {
         option = null;
     }
 
-    await ShopModel.findByIdAndUpdate( id, data, option);       // data = firstName: "john", change firstName field Value to "john"
+    await ShopModel.findByIdAndUpdate( id, data, option);       // data = firstName: 'john', change firstName field Value to 'john'
     
 }
 
@@ -111,10 +160,10 @@ const deleteById= async ( id ) => {
             
         }
         else {
-            console.log("Log: Data is undefined. Aborting Image Deletion Operation");
+            console.log('Log: Data is undefined. Aborting Image Deletion Operation');
         }
 
-        await ShopModel.deleteOne({_id: id})            // {"_id": id} this "" is wrong, I kept getting error
+        await ShopModel.deleteOne({_id: id})            // {'_id': id} this '' is wrong, I kept getting error
     }
     
     catch ( err ){ 
@@ -131,4 +180,5 @@ module.exports = {
     updateById, 
     deleteById, 
     // UploadFile,
-    UploadData };
+    UploadData,
+    GetData };
