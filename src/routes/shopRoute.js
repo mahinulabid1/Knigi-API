@@ -10,9 +10,11 @@ const {
 const { 
     getAllShopItem, 
     getItemById, 
-    insertItem, 
+    // insertItem, 
     updateById, 
     deleteById, 
+    UploadFile,
+    UploadData
 } = require ( '../controller/shopController');
 
 app.use(express.json());
@@ -80,13 +82,27 @@ const fileFields = [
 app
     .post( "/api/v1/newShopItem", upload.fields(fileFields) ,async ( req, res ) =>{  
 
-        try{
+        try{   
+            const image1 = req.files.bookPicture[0].filename;
+            const image2 = req.files.thumbnail[0].filename;
+            const bodyData = req.body.data;
+
+            const uploadFile = new UploadFile();
+            const uploadData = new UploadData();
+            const productImage = uploadFile.image(image1, "shopItem");      // returns name of uploaded image
+            const thumbnailImage = uploadFile.image(image2, "shopItem");    // returns name of uploaded image
+            
+            uploadData.shopData(
+                bodyData, 
+                { productImage: productImage, thumbnail: thumbnailImage }
+            );
+
             // INFO: req.fields give an array containing multiple object
             // INFO: to acces filename = req.files.keyname[0].filename 
-            let productImage = fs.readFileSync(`${__dirname}/../../upload/${req.files.bookPicture[0].filename}`);
-            let thumbnail = fs.readFileSync(`${__dirname}/../../upload/${req.files.thumbnail[0].filename}`);
+            // let productImage = fs.readFileSync(`${__dirname}/../../upload/${req.files.bookPicture[0].filename}`);
+            // let thumbnail = fs.readFileSync(`${__dirname}/../../upload/${req.files.thumbnail[0].filename}`);
 
-            await insertItem ( req.body.data, productImage, thumbnail );    // it must return productImage first and thumbnail image later
+            //await insertItem ( req.body.data, productImage, thumbnail );    // it must return productImage first and thumbnail image later
             // console.log(req.files.bookPicture[0].filename);
             res.status(200).contentType('application/json').send({message : "Data Successfully Inserted"});
 

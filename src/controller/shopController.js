@@ -2,6 +2,7 @@
 //and do data operations
 
 const ShopModel = require ( '../model/shopModel' );
+const fs = require( 'fs' ); 
 const { 
     mongoose, 
     generateUniqueKey, 
@@ -11,6 +12,173 @@ const {
 } = require ( '../../index' );
 
 const { imageInput, deleteImageFile } = require('../AWS_S3/FileController');
+
+
+
+
+class UploadFile {
+    constructor () {
+    //     this.uploadDestination = uploadDestination; // upload Destination Folder Ex: "shopItem"
+    //     this.readFile = undefined;
+    //     this.fileName = fileName;       // fetches name of the file which is in the upload folder.
+        this.uploadStatus = undefined;  
+    }
+
+
+    image(fileName, uploadDestination) {
+        // read image file where mutler temporary moved file in Application directory 
+        const readFile = fs.readFileSync(`${__dirname}/../../upload/${fileName}`); 
+        const uniqueKey = generateUniqueKey();
+
+        s3.putObject({
+
+            Body: imageData,
+            Key : `${uploadDestination}/${uniqueKey}.jpg`,  // do not start with "/", it will create a file with name "/"
+            Bucket: 'knigiimagedb',
+            ACL: "public-read",
+
+        }, (err) => {
+
+            err ? console.log(err) : this.uploadStatus = "Log: S3 Image Upload Successfully completed.";
+
+        });
+
+        return uniqueKey;
+    }
+
+
+    debugUploading () {
+        // this function runs debug functionality using console.
+
+        console.log(this.productImage);
+    }
+}
+
+
+class UploadData {
+    constructor(dataObj, fileNameCollection) {
+        this.dataObj = dataObj;
+        this.fileNameCollection = fileNameCollection;
+    }
+
+    shopData() {
+        // upload data to mongodb
+        this.dataObj = JSON.parse(this.dataObj);
+        const productImage = this.fileNameCollection.productImage;
+        const thumbnail = this.fileNameCollection.thumbnail;
+
+        const imageInfo = {
+
+            productImage : {
+                url : `${cloudFrontUrl}/shopItem/${productImage}.jpg`,
+                imageName :  `${productImage}.jpg`
+            },
+
+            thumbnail : {
+                url : `${cloudFrontUrl}/shopItem/${imageInfo}.jpg`,
+                imageName: `${thumbnail}.jpg`
+            }
+        }
+    }
+
+    userDataUpload () {
+        // will upload user related data to database soon.
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// class DataContainer {
+//     constructor(data) {
+//         // data has to be an object
+//         // accessing an object that has been returned by function caller
+//         /* 
+//         functionCaller( 
+//             { 
+//                 data:datavalue, 
+//                 productImage: value, 
+//                 thumbnailImage: value 
+//             } 
+//         ) 
+//         = is how to pass arguments to caller 
+//         */
+
+//         this.data = data.data;                   // contains JSON text data sent by form-data [fetched from: shopRoute.js]
+//         this.productImage = data.productImage;       // contains file sent by "form-data" using key:"bookPicture"
+//         this.thumbnailImage = data.thumbnailImage;   // contains file sent by "form-data" using key:"thumbnail"
+//         this.limit = data.limit;
+//         this.id = data.id;
+//     }
+// }
+
+
+// class UploadFile extends DataContainer{
+//     constructor() {
+//         this.a = "";
+//         this.b = ""
+//     }
+
+//     s3ReadFile () {    
+//         this.a = imageInput(this.productImage);        // returns the unique key/name for the image, uploads image to S3 bucket
+//         this.b = imageInput(this.thumbnailImage);
+//     }
+
+// }
+
+
+// class DataHandler extends UploadFile{
+//     // responsible for creating data object From MODEL 
+//     constructor( ) {
+//         this.dataFinal = ""
+//     }
+
+//     DataHandler () {
+//         let ParsedObject = JSON.parse(this.data);
+//         let TempObject = {
+
+//             productImage : {
+//                 url : `${cloudFrontUrl}/shopItem/${a}.jpg`,
+//                 imageName :  `${a}.jpg`
+//             },
+
+//             thumbnail : {
+//                 url : `${cloudFrontUrl}/shopItem/${b}.jpg`,
+//                 imageName: `${b}.jpg`
+//             }
+//         }
+
+//         ParsedObject.imageCollection = TempObject;
+//         this.dataFinal = ParsedObject;
+//     }
+
+// }
+
+
+// class DataBaseOperation extends DataHandler{
+//     insertData () {
+//         this.dataFinal.save();
+//     }
+// }
+
+
+
+
+
+
+
 
 
 //GET ALL ITEM FROM THE DATABASE
@@ -49,56 +217,6 @@ const getItemById  = async ( id ) => {
 }
 
 
-// class DataInsertion {
-//     constructor(data, productImage, thumbnailImage) {
-//         this.data = data;   // binding class argument to class object : I know, doesn't make sense
-//         this.productImage = productImage;
-//         this.thumbnailImage = thumbnailImage;
-//     }
-
-//     imageUpload() {
-
-//     }
-// }
-
-// NEED FUNCTION TO UPLOAD TWO IMAGES ASYNCRONOUSLY 
-const imageUpload = (productImage, thumbnailImage) => {
-    return new Promise( (resolve, reject) => {
-        let product = imageInput(productImage);   // returns the unique key/name for the image, upload image to S3 bucket
-        let thumbnail = imageInput(thumbnailImage)
-
-        resolve([product, thumbnail]);
-    })
-}
-
-
-// function: insert new item in mongodb, uploads image
-// insert using form-data
-const insertItem = async ( data, productImage, thumbnailImage ) => {       // data has to be an object, (productImage,thumbnailImage) takes the image file using fs module
-
-    try {
-        let [product, thumbnail] = await imageUpload(productImage, thumbnailImage);    // returns the unique key/name for the image, upload image to S3 bucket
-        let dataObj = JSON.parse(data);                 // JSON data got from req.body.key, app.use(express.json()) cant pase form-data
-        console.log(dataObj);
-
-        // Putting more information(of Images) by following Mongoose Schema Model
-        dataObj.imageCollection = {};
-        dataObj.imageCollection.productImage = {};
-        dataObj.imageCollection.thumbnail = {};
-        dataObj.imageCollection.productImage.url = `${cloudFrontUrl}/shopItem/${product}.jpg`;
-        dataObj.imageCollection.productImage.imageName = `${product}.jpg`;
-        dataObj.imageCollection.thumbnail.url = `${cloudFrontUrl}/shopItem/${thumbnail}.jpg`;
-        dataObj.imageCollection.thumbnail.imageName = `${thumbnail}.jpg`;
-
-        const testInsert = new ShopModel( dataObj );
-        await testInsert.save( );
-    }
-
-    catch ( err ) {
-        console.log(err);
-    }
-    
-}
 
 
 // UPDATE SHOP ITEM
@@ -137,4 +255,11 @@ const deleteById= async ( id ) => {
 
 
 
-module.exports = { getAllShopItem, getItemById, insertItem, updateById, deleteById };
+module.exports = { 
+    getAllShopItem, 
+    getItemById, 
+    // insertItem, 
+    updateById, 
+    deleteById, 
+    UploadFile,
+    UploadData };
