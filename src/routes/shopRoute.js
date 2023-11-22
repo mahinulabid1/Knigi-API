@@ -92,6 +92,8 @@ const fileFields = [
 ]
 app
     .post( "/api/v1/newShopItem", upload.fields(fileFields) ,async ( req, res ) =>{  
+        // INFO: req.fields give an array containing multiple object
+        // INFO: to acces filename = req.files.keyname[0].filename 
 
         try{   
             const image1 = req.files.bookPicture[0].filename;
@@ -107,8 +109,7 @@ app
                 { productImage: productImage, thumbnail: thumbnailImage }
             );
 
-            // INFO: req.fields give an array containing multiple object
-            // INFO: to acces filename = req.files.keyname[0].filename 
+
             // let productImage = fs.readFileSync(`${__dirname}/../../upload/${req.files.bookPicture[0].filename}`);
             // let thumbnail = fs.readFileSync(`${__dirname}/../../upload/${req.files.thumbnail[0].filename}`);
 

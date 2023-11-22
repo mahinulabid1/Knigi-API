@@ -69,7 +69,7 @@ class GetData {
         let execStartTime = Date.now();
         const data = await ShopModel.findById( id );
         this.executionDuration = Date.now() - execStartTime;
-        data === null ? data = 'No data found!' : console.info(`Data Fetching Complete. Took time: ${this.executionDuration}`);
+        data === null ? data = 'No data found!' : console.info(`Data Fetching Complete. Took time: ${this.executionDuration}ms`);
         return data;
     }
 }
