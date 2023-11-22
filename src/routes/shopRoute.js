@@ -15,16 +15,22 @@ const {
     deleteById, 
     // UploadFile,
     UploadData,
-    GetData
+    GetData,
+    DeleteRecord
 } = require ( '../controller/shopController');
 
-const { UploadFile } = require( '../AWS_S3/FileController' );
+const { UploadFile, DeleteFile } = require( '../AWS_S3/FileController' );
 
 app.use(express.json());
 const fs = require( 'fs' );
 const uploadFile = new UploadFile();
 const uploadData = new UploadData();
 const fetchData = new GetData();
+const deleteRecord = new DeleteRecord();
+const deleteFile = new DeleteFile();
+
+
+
 //default routing
 app
     .get ( "/", ( req, res ) => {
@@ -48,7 +54,7 @@ app
             //ask for specific item with ID
             else if( query.id !== undefined) {
                 // route : http://localhost:8000/api/v1/shoplist?id=655087298290bc43b3f580a7  (mongodbID)
-                const data = await await fetchData.getItemById( query.id );
+                const data = await fetchData.getItemById( query.id );
                 res.status( 200 ).json( data );
             }
 
@@ -119,8 +125,15 @@ app
 
 app
     .delete("/api/v1/shoplist", async (req , res) => {
-        await deleteById(req.query.id);
-        res.status(200).send(`Deleted ${req.query.id}`);
+        const id = req.query.id;
+        const data = await fetchData.getItemById( id );     // fetched related data before deleting 
+        const ProductImageUrl = data.imageCollection.productImage.url;
+        const thumbnailUrl = data.imageCollection.thumbnail.url;
+        deleteFile.image(ProductImageUrl);  // delete productimage
+        deleteFile.image(thumbnailUrl);     // delete thumbnail image
+
+        await deleteRecord.id( id );
+        res.status(200).send(`Deleted ${ id }`);
     })
 
 
