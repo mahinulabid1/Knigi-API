@@ -87,7 +87,6 @@ app
             let thumbnail = fs.readFileSync(`${__dirname}/../../upload/${req.files.thumbnail[0].filename}`);
 
             await insertItem ( req.body.data, productImage, thumbnail );    // it must return productImage first and thumbnail image later
-            // console.log(req.files.bookPicture[0].filename);
             res.status(200).contentType('application/json').send({message : "Data Successfully Inserted"});
 
         }
