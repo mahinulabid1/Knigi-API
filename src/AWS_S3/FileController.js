@@ -51,19 +51,19 @@ class DeleteFile {
     }
 
     image( imageUrl ){
-        // const path = imageUrl.replace('https://d19a566nyr3opx.cloudfront.net/', "");
+        const path = imageUrl.replace('https://d19a566nyr3opx.cloudfront.net/', "");
 
-        // s3.deleteObject({
-        //     Key : path, 
-        //     Bucket: 'knigiimagedb',
-        // }, (err) => {
-        //     if(err) {
-        //         console.log(err);
-        //     }
-        //     else{
-        //         console.log("Log: Image deleted successfully");
-        //     }
-        // })
+        s3.deleteObject({
+            Key : path, 
+            Bucket: 'knigiimagedb',
+        }, (err) => {
+            if(err) {
+                console.log(err);
+            }
+            else{
+                console.log("Log: Image deleted successfully");
+            }
+        })
     }
 }
 
