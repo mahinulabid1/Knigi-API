@@ -14,7 +14,6 @@ const {
 const { imageInput, deleteImageFile } = require('../AWS_S3/FileController');
 
 
-
 class UploadData { // probable future name : InsertRecord
 
     async shopData(dataObj, fileNameCollection) {
@@ -45,7 +44,6 @@ class UploadData { // probable future name : InsertRecord
         // will upload user related data to database soon.
     }
 }
-
 
 
 class GetData {
@@ -105,7 +103,6 @@ class UpdateDB {
 }
 
 
-
 class DeleteRecord {
     constructor () {
 
@@ -113,7 +110,7 @@ class DeleteRecord {
 
     async whereId ( id ) {
         try{
-            await ShopModel.deleteOne({_id: id});
+            await ShopModel.deleteOne({_id: id});        // {'_id': id} this '' is wrong, I kept getting error
         } catch (err) {
             console.log(`Failed to delete `);
             return;
@@ -124,87 +121,7 @@ class DeleteRecord {
 
 
 
-//GET ALL ITEM FROM THE DATABASE
-// const getAllShopItem = async ( limit ) => {
-
-//     try {
-//         if ( limit === undefined ) {
-//             const result = await ShopModel.find( { /* find all */ } );
-//             return result;
-//         }
-//         else if ( limit !== undefined ) {
-//             const result = await ShopModel.find( { /* find all */ } ).limit(limit);     // fetching data from MongoDB
-//             return result;
-//         }
-        
-//     }
-    
-//     catch ( err ) {
-//         console.log( err );
-//     }
-    
-// }
-
-
-// // GET ONE ITEM BY ID
-// const getItemById  = async ( id ) => {
-
-//     try{
-//         const result = await ShopModel.findById(id);
-//         return result;
-//     }
-//     catch ( err ) {
-//         console.log(err);
-//     }
-
-// }
-
-
-
-
-// // UPDATE SHOP ITEM
-// const updateById = async (id, data, option) => {
-//     if( option === undefined) {
-//         option = null;
-//     }
-
-//     await ShopModel.findByIdAndUpdate( id, data, option);       // data = firstName: 'john', change firstName field Value to 'john'
-    
-// }
-
-
-//DELETE SHOP ITEM
-const deleteById= async ( id ) => {
-    try {
-        let data = await getItemById( id );
-        data = data.ImageName;
-
-        if(data !== undefined) {
-            console.log(data);
-            deleteImageFile( `shopItem/${data}`);
-            
-        }
-        else {
-            console.log('Log: Data is undefined. Aborting Image Deletion Operation');
-        }
-
-        await ShopModel.deleteOne({_id: id})            // {'_id': id} this '' is wrong, I kept getting error
-    }
-    
-    catch ( err ){ 
-        console.log(err);
-    }
-}
-
-
-
 module.exports = { 
-    // getAllShopItem, 
-    // getItemById, 
-    // insertItem, 
-    // updateById, 
-    deleteById, 
-    // UploadFile,
     UploadData,
     GetData,
     DeleteRecord,

@@ -107,7 +107,6 @@ app
             const image2 = req.files.thumbnail[0].filename;
             const bodyData = req.body.data;     // data is the keyname of form-data
 
-
             const productImage = uploadFile.image(image1, "shopItem");      // returns name of uploaded image
             const thumbnailImage = uploadFile.image(image2, "shopItem");    // returns name of uploaded image
             
