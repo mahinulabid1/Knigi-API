@@ -2,6 +2,7 @@
 //and do data operations
 
 const ShopModel = require ( '../model/shopModel' );
+const fs = require( 'fs' ); 
 const { 
     mongoose, 
     generateUniqueKey, 
@@ -13,103 +14,163 @@ const {
 const { imageInput, deleteImageFile } = require('../AWS_S3/FileController');
 
 
-//GET ALL ITEM FROM THE DATABASE
-const getAllShopItem = async ( limit ) => {
 
-    try {
-        if ( limit === undefined ) {
-            const result = await ShopModel.find( { /* find all */ } );
-            return result;
+class UploadData { // probable future name : InsertRecord
+
+    async shopData(dataObj, fileNameCollection) {
+        // upload data to mongodb
+        const data = JSON.parse(dataObj);
+        const productImage = fileNameCollection.productImage;
+        const thumbnail = fileNameCollection.thumbnail;
+
+        const imageInfo = {
+
+            productImage : {
+                url : `${cloudFrontUrl}/shopItem/${productImage}`,
+                imageName :  productImage
+            },
+
+            thumbnail : {
+                url : `${cloudFrontUrl}/shopItem/${thumbnail}`,
+                imageName: thumbnail
+            }
         }
-        else if ( limit !== undefined ) {
-            const result = await ShopModel.find( { /* find all */ } ).limit(limit);     // fetching data from MongoDB
-            return result;
+
+        data.imageCollection = imageInfo;
+        const prepInsertion = new ShopModel(data);
+        prepInsertion.save();
+    }
+
+    userDataUpload () {
+        // will upload user related data to database soon.
+    }
+}
+
+
+
+class GetData {
+    constructor() {
+        this.executionDuration = undefined;
+    }
+
+    async allShopItem ( limit ) {
+        if( limit === undefined ) {
+            limit = null;
+        }
+
+        let execStartTime = Date.now();
+        const data = await ShopModel.find( { /* find all */ } ).limit(limit);
+        this.executionDuration = Date.now() - execStartTime;
+        console.log( `Finished fetching data. Took time: ${this.executionDuration}ms`);
+        return data;
+    }
+
+    async getItemById ( id ){
+        let execStartTime = Date.now();
+        const data = await ShopModel.findById( id );
+        this.executionDuration = Date.now() - execStartTime;
+        data === null ? data = 'No data found!' : console.info(`Data Fetching Complete. Took time: ${this.executionDuration}ms`);
+        return data;
+    }
+}
+
+
+class UpdateDB {
+    constructor( ) {
+        this.executionDuration = undefined;
+    }
+
+    async itemById (id, data, option)  {
+
+        // error handling
+        if( id === undefined ) {
+            console.error ( 'id is not defined updateById(id, data, option) \n Operation Aborted!' );
+            return;
+        } else if( data === undefined ) {
+            console.error ( 'data is not defined in updateById(id, data, option) \n Operation Aborted!' );
+            return;
+        } else if( id === undefined && data === undefined ) {
+            console.error ( 'data & id is not defined in updateById(id, data, option) \n Operation Aborted!')
+            return;
         }
         
-    }
-    
-    catch ( err ) {
-        console.log( err );
-    }
-    
-}
-
-
-// GET ONE ITEM BY ID
-const getItemById  = async ( id ) => {
-
-    try{
-        const result = await ShopModel.findById(id);
-        return result;
-    }
-    catch ( err ) {
-        console.log(err);
+        option === undefined ? option = null : option = option;
+        const execStartTime = Date.now();
+        await ShopModel.findByIdAndUpdate( id, data, option);       // data = firstName: 'john', change firstName field Value to 'john'
+        const execEndTime = Date.now();
+        this.executionDuration = execEndTime - execStartTime;
+        console.info(` Data dated successfully. Took time: ${this.executionDuration}ms`);
     }
 
 }
 
 
-// class DataInsertion {
-//     constructor(data, productImage, thumbnailImage) {
-//         this.data = data;   // binding class argument to class object : I know, doesn't make sense
-//         this.productImage = productImage;
-//         this.thumbnailImage = thumbnailImage;
-//     }
 
-//     imageUpload() {
+class DeleteRecord {
+    constructor () {
 
+    }
+
+    async whereId ( id ) {
+        try{
+            await ShopModel.deleteOne({_id: id});
+        } catch (err) {
+            console.log(`Failed to delete `);
+            return;
+        }
+        console.log(`Deletion Successful id: ${id}`);
+    }
+}
+
+
+
+//GET ALL ITEM FROM THE DATABASE
+// const getAllShopItem = async ( limit ) => {
+
+//     try {
+//         if ( limit === undefined ) {
+//             const result = await ShopModel.find( { /* find all */ } );
+//             return result;
+//         }
+//         else if ( limit !== undefined ) {
+//             const result = await ShopModel.find( { /* find all */ } ).limit(limit);     // fetching data from MongoDB
+//             return result;
+//         }
+        
 //     }
+    
+//     catch ( err ) {
+//         console.log( err );
+//     }
+    
 // }
 
-// NEED FUNCTION TO UPLOAD TWO IMAGES ASYNCRONOUSLY 
-const imageUpload = (productImage, thumbnailImage) => {
-    return new Promise( (resolve, reject) => {
-        let product = imageInput(productImage);   // returns the unique key/name for the image, upload image to S3 bucket
-        let thumbnail = imageInput(thumbnailImage)
 
-        resolve([product, thumbnail]);
-    })
-}
+// // GET ONE ITEM BY ID
+// const getItemById  = async ( id ) => {
+
+//     try{
+//         const result = await ShopModel.findById(id);
+//         return result;
+//     }
+//     catch ( err ) {
+//         console.log(err);
+//     }
+
+// }
 
 
-// function: insert new item in mongodb, uploads image
-// insert using form-data
-const insertItem = async ( data, productImage, thumbnailImage ) => {       // data has to be an object, (productImage,thumbnailImage) takes the image file using fs module
 
-    try {
-        let [product, thumbnail] = await imageUpload(productImage, thumbnailImage);    // returns the unique key/name for the image, upload image to S3 bucket
-        let dataObj = JSON.parse(data);                 // JSON data got from req.body.key, app.use(express.json()) cant pase form-data
-        console.log(dataObj);
 
-        // Putting more information(of Images) by following Mongoose Schema Model
-        dataObj.imageCollection = {};
-        dataObj.imageCollection.productImage = {};
-        dataObj.imageCollection.thumbnail = {};
-        dataObj.imageCollection.productImage.url = `${cloudFrontUrl}/shopItem/${product}.jpg`;
-        dataObj.imageCollection.productImage.imageName = `${product}.jpg`;
-        dataObj.imageCollection.thumbnail.url = `${cloudFrontUrl}/shopItem/${thumbnail}.jpg`;
-        dataObj.imageCollection.thumbnail.imageName = `${thumbnail}.jpg`;
+// // UPDATE SHOP ITEM
+// const updateById = async (id, data, option) => {
+//     if( option === undefined) {
+//         option = null;
+//     }
 
-        const testInsert = new ShopModel( dataObj );
-        await testInsert.save( );
-    }
-
-    catch ( err ) {
-        console.log(err);
-    }
+//     await ShopModel.findByIdAndUpdate( id, data, option);       // data = firstName: 'john', change firstName field Value to 'john'
     
-}
-
-
-// UPDATE SHOP ITEM
-const updateById = async (id, data, option) => {
-    if( option === undefined) {
-        option = null;
-    }
-
-    await ShopModel.findByIdAndUpdate( id, data, option);       // data = firstName: "john", change firstName field Value to "john"
-    
-}
+// }
 
 
 //DELETE SHOP ITEM
@@ -124,10 +185,10 @@ const deleteById= async ( id ) => {
             
         }
         else {
-            console.log("Log: Data is undefined. Aborting Image Deletion Operation");
+            console.log('Log: Data is undefined. Aborting Image Deletion Operation');
         }
 
-        await ShopModel.deleteOne({_id: id})            // {"_id": id} this "" is wrong, I kept getting error
+        await ShopModel.deleteOne({_id: id})            // {'_id': id} this '' is wrong, I kept getting error
     }
     
     catch ( err ){ 
@@ -137,4 +198,15 @@ const deleteById= async ( id ) => {
 
 
 
-module.exports = { getAllShopItem, getItemById, insertItem, updateById, deleteById };
+module.exports = { 
+    // getAllShopItem, 
+    // getItemById, 
+    // insertItem, 
+    // updateById, 
+    deleteById, 
+    // UploadFile,
+    UploadData,
+    GetData,
+    DeleteRecord,
+    UpdateDB
+};
