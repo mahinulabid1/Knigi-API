@@ -1,11 +1,12 @@
+const fs = require( 'fs' );
+
 const { 
     express, 
     app, 
     router, 
     upload, 
     s3,
-    cloudFrontUrl
-} = require ( '../../index' );
+    cloudFrontUrl } = require ( '../../index' );
 
 const { 
     getAllShopItem, 
@@ -16,18 +17,19 @@ const {
     // UploadFile,
     UploadData,
     GetData,
-    DeleteRecord
-} = require ( '../controller/shopController');
+    DeleteRecord,
+    UpdateDB } = require ( '../controller/shopController');
 
 const { UploadFile, DeleteFile } = require( '../AWS_S3/FileController' );
 
 app.use(express.json());
-const fs = require( 'fs' );
+
 const uploadFile = new UploadFile();
 const uploadData = new UploadData();
 const fetchData = new GetData();
 const deleteRecord = new DeleteRecord();
 const deleteFile = new DeleteFile();
+const update = new UpdateDB();
 
 
 
@@ -67,9 +69,13 @@ app
 
     //UPDATE SHOP SPECIFIC ITEM
 app
-    .patch("/api/v1/shoplist" ,async (req, res) => {
+    .patch("/api/v1/shoplist" ,upload.array(), async (req, res) => {
+        const id = req.query.id;
+        const dataToUpdate = JSON.parse(req.body.data); 
+
         try{
-            await updateById(req.query.id, req.body);
+            await update.itemById(id, dataToUpdate);
+            // await updateById(req.query.id, req.body);
             res.status(200).send("updated");
         }
         catch (err){ 
@@ -90,6 +96,7 @@ const fileFields = [
         maxCount : 1
     }
 ]
+
 app
     .post( "/api/v1/newShopItem", upload.fields(fileFields) ,async ( req, res ) =>{  
         // INFO: req.fields give an array containing multiple object
@@ -98,7 +105,7 @@ app
         try{   
             const image1 = req.files.bookPicture[0].filename;
             const image2 = req.files.thumbnail[0].filename;
-            const bodyData = req.body.data;
+            const bodyData = req.body.data;     // data is the keyname of form-data
 
 
             const productImage = uploadFile.image(image1, "shopItem");      // returns name of uploaded image
@@ -109,15 +116,9 @@ app
                 { productImage: productImage, thumbnail: thumbnailImage }
             );
 
-
-            // let productImage = fs.readFileSync(`${__dirname}/../../upload/${req.files.bookPicture[0].filename}`);
-            // let thumbnail = fs.readFileSync(`${__dirname}/../../upload/${req.files.thumbnail[0].filename}`);
-
-            //await insertItem ( req.body.data, productImage, thumbnail );    // it must return productImage first and thumbnail image later
-            // console.log(req.files.bookPicture[0].filename);
             res.status(200).contentType('application/json').send({message : "Data Successfully Inserted"});
-
         }
+
         catch ( err ) {
             console.log( err );
         }
@@ -133,7 +134,7 @@ app
         deleteFile.image(ProductImageUrl);  // delete productimage
         deleteFile.image(thumbnailUrl);     // delete thumbnail image
 
-        await deleteRecord.id( id );
+        await deleteRecord.whereId( id );
         res.status(200).send(`Deleted ${ id }`);
     })
 

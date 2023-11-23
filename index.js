@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');  // didn't find any use yet
 const AWS = require( 'aws-sdk' );
 const multer = require('multer');
 const app = express( );
-app.use(express.json());  
+app.use(express.json());        // doesn't work when req is sent using form-data, not raw JSON
 // Enable CORS for all routes
 // const corsOptions = {
 //     origin: 'http://localhost:5173/', // Specify the allowed domain
@@ -14,10 +14,10 @@ app.use(express.json());
 //     optionsSuccessStatus: 204,
 // };
   
-// app.use(cors(corsOptions));                  // doesn't work when req is sent using form-data, not raw JSON
+// app.use(cors(corsOptions));                  
 app.use(cors());   
 
-const upload = multer({dest: 'upload/'});
+const upload = multer ( { dest: 'upload/' } );
 
 
   

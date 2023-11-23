@@ -80,17 +80,17 @@ class UpdateDB {
         this.executionDuration = undefined;
     }
 
-    async updateById (id, data, option)  {
+    async itemById (id, data, option)  {
 
         // error handling
         if( id === undefined ) {
-            console.error ( 'id is not defined updateById(id, data, option)' );
+            console.error ( 'id is not defined updateById(id, data, option) \n Operation Aborted!' );
             return;
         } else if( data === undefined ) {
-            console.error ( 'data is not defined in updateById(id, data, option)' );
+            console.error ( 'data is not defined in updateById(id, data, option) \n Operation Aborted!' );
             return;
         } else if( id === undefined && data === undefined ) {
-            console.error ( 'data & id is not defined in updateById(id, data, option)')
+            console.error ( 'data & id is not defined in updateById(id, data, option) \n Operation Aborted!')
             return;
         }
         
@@ -111,7 +111,7 @@ class DeleteRecord {
 
     }
 
-    async id ( id ) {
+    async whereId ( id ) {
         try{
             await ShopModel.deleteOne({_id: id});
         } catch (err) {
@@ -207,5 +207,6 @@ module.exports = {
     // UploadFile,
     UploadData,
     GetData,
-    DeleteRecord
+    DeleteRecord,
+    UpdateDB
 };
