@@ -1,6 +1,47 @@
 // this is where I'll do database operation
 const userModel = require("../model/userModel");
 
+class NewUser {
+
+    constructor() {
+
+    }
+
+    async create(JSONdata) {
+        let data = JSON.parse(JSONdata);
+        data = new userModel( data );
+        data.save();
+        return "Data Upload Successful";
+    }
+}
+
+
+class FetchUser {
+    constructor() {
+        this.executionDuration = undefined;
+    }
+    async all(limit) {
+        limit === undefined ? limit = null : limit = limit;
+        const execStart = Date.now();
+        const data = await userModel.find({ /* find all */ }).limit(limit);
+        this.executionDuration = Date.now() - execStart;
+        console.log(`Data fetching complete. Time took: ${this.executionDuration}`);
+        return data;
+    }   
+}
+
+
+class UpdateUser {
+    constructor () {
+
+    }
+
+    
+}
+
+
+
+
 const newUser = async ( data ) => {
 
     try {
@@ -42,4 +83,4 @@ const  updateUser = async ( id , data , option ) => {
     }
 }
 
-module.exports = { newUser, getUserInfo, updateUser }
+module.exports = { FetchUser ,NewUser ,newUser, getUserInfo, updateUser }
