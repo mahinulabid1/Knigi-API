@@ -5,13 +5,17 @@ const {
     NewUser,
     FetchUser,
     UpdateUser,
+    DeleteUser,
     // newUser, 
     getUserInfo, 
     // updateUser,
-     } = require("../controller/userController");
+    } = require("../controller/userController");
+
+// instantiation
 const newUser = new NewUser();
 const fetchUser = new FetchUser();
 const updateUser = new UpdateUser();
+const deleteUser = new DeleteUser();
 
 
 
@@ -55,4 +59,12 @@ app.patch( "/api/v1/user" , upload.array(), async ( req, res ) => {
     // catch ( err ) {
     //     console.log( err );
     // }
+})
+
+
+app.delete("/api/v1/user/delete", async ( req, res ) => {
+    const id = req.query.id;
+    console.log(id);
+    let result = await deleteUser.byId( id );
+    res.status(200).send(result);
 })

@@ -25,7 +25,7 @@ class FetchUser {
         const execStart = Date.now();
         const data = await userModel.find({ /* find all */ }).limit(limit);
         this.executionDuration = Date.now() - execStart;
-        console.log(`Data fetching complete. Time took: ${this.executionDuration}`);
+        console.log(`Data fetching complete. Time took: ${this.executionDuration}ms`);
         return data;
     }   
 }
@@ -55,10 +55,22 @@ class UpdateUser {
         const execStart = Date.now();
         let x = await userModel.findByIdAndUpdate(id , data, option);
         this.executionDuration = Date.now() - execStart;
-        x === undefined || null ? console.info ( `Updated Successfully (${this.executionDuration}ms)` ) : console.info( 'upload failed' );
+        x !== undefined || null ? console.info ( `Updated Successfully (${this.executionDuration}ms)` ) : console.info( 'Update failed' );
     }
 }
 
+
+class DeleteUser {
+    constructor() {
+        this.executionDuration = undefined;
+    }
+
+    async byId( id ) {
+        console.log("starting operation");
+        await userModel.deleteOne({ _id : id });
+        return "Successfully Deleted";
+    }
+}
 
 
 
@@ -103,4 +115,4 @@ const  updateUser = async ( id , data , option ) => {
     }
 }
 
-module.exports = { FetchUser ,NewUser, UpdateUser, newUser, getUserInfo, updateUser }
+module.exports = { FetchUser ,NewUser, UpdateUser, DeleteUser, newUser, getUserInfo, updateUser }
