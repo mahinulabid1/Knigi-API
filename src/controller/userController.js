@@ -33,10 +33,30 @@ class FetchUser {
 
 class UpdateUser {
     constructor () {
-
+        this.executionDuration = undefined;
     }
 
-    
+    async byId( id , data , option ) {
+        // validation
+        if(id === undefined) {
+            console.log("ID is undefined at byId( id , data , option ) at userController.js");
+            return;
+        }
+        else if( data === undefined ) {
+            console.log("data is undefined at byId( id , data , option ) at userController.js");
+            return;
+        } else if(id === undefined && data === undefined ) {
+            console.log("data and id are undefined at byId( id , data , option ) at userController.js");
+            return;
+        }
+
+
+        option === undefined ? option = null : option = option;
+        const execStart = Date.now();
+        let x = await userModel.findByIdAndUpdate(id , data, option);
+        this.executionDuration = Date.now() - execStart;
+        x === undefined || null ? console.info ( `Updated Successfully (${this.executionDuration}ms)` ) : console.info( 'upload failed' );
+    }
 }
 
 
@@ -83,4 +103,4 @@ const  updateUser = async ( id , data , option ) => {
     }
 }
 
-module.exports = { FetchUser ,NewUser ,newUser, getUserInfo, updateUser }
+module.exports = { FetchUser ,NewUser, UpdateUser, newUser, getUserInfo, updateUser }

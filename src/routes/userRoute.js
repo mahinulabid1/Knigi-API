@@ -4,11 +4,15 @@ const {
 const { 
     NewUser,
     FetchUser,
+    UpdateUser,
     // newUser, 
     getUserInfo, 
-    updateUser } = require("../controller/userController");
+    // updateUser,
+     } = require("../controller/userController");
 const newUser = new NewUser();
 const fetchUser = new FetchUser();
+const updateUser = new UpdateUser();
+
 
 
 app.post("/api/v1/user/newUser", upload.array(), async (req, res) => {
@@ -38,15 +42,17 @@ app.get("/api/v1/user/allUser",async ( req, res ) =>{
     res.status(200).contentType("application/json").send(data);
 })
 
-app.patch( "/api/v1/user" , async ( req, res ) => {
+app.patch( "/api/v1/user" , upload.array(), async ( req, res ) => {
     const id = req.query.id; 
-    const data = req.body;
-    try{
-        let a = await updateUser(id, data);
-        console.log(a);
-        res.status(200).send(`User Updated `);
-    }
-    catch ( err ) {
-        console.log( err );
-    }
+    const data = JSON.parse(req.body.data);
+    updateUser.byId(id, data);
+    res.status(200).send("Update Complete");
+    // try{
+    //     let a = await updateUser(id, data);
+    //     console.log(a);
+    //     res.status(200).send(`User Updated `);
+    // }
+    // catch ( err ) {
+    //     console.log( err );
+    // }
 })
