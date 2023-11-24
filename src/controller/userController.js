@@ -1,5 +1,24 @@
 // this is where I'll do database operation
 const userModel = require("../model/userModel");
+const {bcrypt} =require('../../index');
+
+class Hashing {
+    async encrypt( password ) {
+        let execStart= Date.now();
+        let x = await bcrypt.genSalt(10);
+        let encryptedPass = await bcrypt.hash(password, x);
+        let executionDuration = Date.now() - execStart;
+        console.log(`\nTook Time : ${executionDuration}ms\n`);
+        // console.log(encryptedPass);
+        return encryptedPass;
+    }
+
+    validatePass (password) {
+
+    }
+    
+}
+
 
 class NewUser {
 
@@ -7,8 +26,8 @@ class NewUser {
 
     }
 
-    async create(JSONdata) {
-        let data = JSON.parse(JSONdata);
+    async create(data) {
+        // let data = JSON.parse(JSONdata);
         data = new userModel( data );
         data.save();
         return "Data Upload Successful";
@@ -74,45 +93,45 @@ class DeleteUser {
 
 
 
-const newUser = async ( data ) => {
+// const newUser = async ( data ) => {
 
-    try {
-        const insertData = new userModel( data );
-        await insertData.save( );
-    }
-    catch ( err ) {
-        console.log( err );
-    }
+//     try {
+//         const insertData = new userModel( data );
+//         await insertData.save( );
+//     }
+//     catch ( err ) {
+//         console.log( err );
+//     }
     
-}
+// }
 
-const getUserInfo = async ( id ) => {
+// const getUserInfo = async ( id ) => {
 
-    try { 
-        let data = await userModel.findById( id );
-        return data;
-    }
+//     try { 
+//         let data = await userModel.findById( id );
+//         return data;
+//     }
 
-    catch ( err ) {
-        console.log( err );
-    }
+//     catch ( err ) {
+//         console.log( err );
+//     }
 
-}
+// }
 
 
-const  updateUser = async ( id , data , option ) => {
+// const  updateUser = async ( id , data , option ) => {
 
-    try{
-        if ( option === undefined ) {
-            option = null;
-        }
+//     try{
+//         if ( option === undefined ) {
+//             option = null;
+//         }
 
-        await userModel.findByIdAndUpdate(id, data, option);
-    }
+//         await userModel.findByIdAndUpdate(id, data, option);
+//     }
 
-    catch ( err ) {
-        console.log(err);
-    }
-}
+//     catch ( err ) {
+//         console.log(err);
+//     }
+// }
 
-module.exports = { FetchUser ,NewUser, UpdateUser, DeleteUser, newUser, getUserInfo, updateUser }
+module.exports = { FetchUser ,NewUser, UpdateUser, DeleteUser, Hashing }
