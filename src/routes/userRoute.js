@@ -7,8 +7,10 @@ const {
     UpdateUser,
     DeleteUser,
     // newUser, 
-    getUserInfo, 
+    // getUserInfo, 
     // updateUser,
+    Hashing,
+    UserValidation,
     } = require("../controller/userController");
 
 // instantiation
@@ -16,6 +18,8 @@ const newUser = new NewUser();
 const fetchUser = new FetchUser();
 const updateUser = new UpdateUser();
 const deleteUser = new DeleteUser();
+const hashing = new Hashing();
+const userValidation = new UserValidation();
 
 
 
@@ -28,10 +32,28 @@ app.post("/api/v1/user/newUser", upload.array(), async (req, res) => {
     // catch ( err ) {
     //     console.log( err );
     // }
-    let status = await newUser.create(req.body.data);
-    console.log(status);
+    let data = JSON.parse(req.body.data);
+    console.log(data);
+    let encryptPass = await hashing.encrypt(data.password);
+    console.log(encryptPass);
+    data.password = encryptPass;
+    console.log(data)
+    let status = await newUser.create(data);
+
+    
+    // console.log(status);
     res.status(200).send("Log: new user created");
     
+})
+
+app.post("/api/v1/user/login", upload.array(), async ( req, res ) => {
+    const clientInput = JSON.parse(req.body.data);
+    const username = clientInput.userName;
+    const password = clientInput.password;
+    let data = await fetchUser.userName(username);
+    let valid = await userValidation.check(password, data[0].password);
+
+    res.status(200).contentType("application/json").send(valid);
 })
 
 // fetch single user by ID
@@ -68,3 +90,9 @@ app.delete("/api/v1/user/delete", async ( req, res ) => {
     let result = await deleteUser.byId( id );
     res.status(200).send(result);
 })
+
+
+app.get('/api/v1/crpttest',async ( req, res ) => {
+    await hashing.encrypt('hello');
+    res.send("done");
+})  

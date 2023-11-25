@@ -12,11 +12,14 @@ class Hashing {
         // console.log(encryptedPass);
         return encryptedPass;
     }
-
-    validatePass (password) {
-
-    }
     
+}
+
+class UserValidation {
+    async check(password, databaseHashPass) {
+        let res = await bcrypt.compare(password, databaseHashPass);
+        return res;
+    }
 }
 
 
@@ -39,7 +42,7 @@ class FetchUser {
     constructor() {
         this.executionDuration = undefined;
     }
-    async all(limit) {
+    async all ( limit ) {
         limit === undefined ? limit = null : limit = limit;
         const execStart = Date.now();
         const data = await userModel.find({ /* find all */ }).limit(limit);
@@ -47,6 +50,13 @@ class FetchUser {
         console.log(`Data fetching complete. Time took: ${this.executionDuration}ms`);
         return data;
     }   
+
+    async userName ( username ) {
+        console.log(username);
+        let result = await userModel.find( { userName : username } );
+        console.log(result);
+        return result;
+    }
 }
 
 
@@ -93,45 +103,4 @@ class DeleteUser {
 
 
 
-// const newUser = async ( data ) => {
-
-//     try {
-//         const insertData = new userModel( data );
-//         await insertData.save( );
-//     }
-//     catch ( err ) {
-//         console.log( err );
-//     }
-    
-// }
-
-// const getUserInfo = async ( id ) => {
-
-//     try { 
-//         let data = await userModel.findById( id );
-//         return data;
-//     }
-
-//     catch ( err ) {
-//         console.log( err );
-//     }
-
-// }
-
-
-// const  updateUser = async ( id , data , option ) => {
-
-//     try{
-//         if ( option === undefined ) {
-//             option = null;
-//         }
-
-//         await userModel.findByIdAndUpdate(id, data, option);
-//     }
-
-//     catch ( err ) {
-//         console.log(err);
-//     }
-// }
-
-module.exports = { FetchUser ,NewUser, UpdateUser, DeleteUser, Hashing }
+module.exports = { FetchUser ,NewUser, UpdateUser, DeleteUser, Hashing, UserValidation }

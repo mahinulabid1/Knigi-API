@@ -5,6 +5,7 @@ const router = express.Router( );
 const bodyParser = require('body-parser');  // didn't find any use yet
 const AWS = require( 'aws-sdk' );
 const multer = require('multer');
+const bcrypt = require( 'bcrypt' );
 const app = express( );
 app.use(express.json());        // doesn't work when req is sent using form-data, not raw JSON
 // Enable CORS for all routes
@@ -54,7 +55,8 @@ module.exports = {
     generateUniqueKey, 
     bodyParser, 
     upload ,
-    cloudFrontUrl
+    cloudFrontUrl,
+    bcrypt
 };
 
 const url = "mongodb+srv://himahinulabid:DjYFI1UPxb5BRyJl@cluster0.kgeats8.mongodb.net/Knigi?retryWrites=true&w=majority";
