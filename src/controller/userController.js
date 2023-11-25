@@ -2,6 +2,7 @@
 const userModel = require("../model/userModel");
 const {bcrypt} =require('../../index');
 
+
 class Hashing {
     async encrypt( password ) {
         let execStart= Date.now();
@@ -9,7 +10,6 @@ class Hashing {
         let encryptedPass = await bcrypt.hash(password, x);
         let executionDuration = Date.now() - execStart;
         console.log(`\nTook Time : ${executionDuration}ms\n`);
-        // console.log(encryptedPass);
         return encryptedPass;
     }
     
@@ -25,27 +25,26 @@ class UserValidation {
 
 class NewUser {
 
-    constructor() {
+    constructor( ) {
 
     }
 
-    async create(data) {
-        // let data = JSON.parse(JSONdata);
-        data = new userModel( data );
-        data.save();
+    async create ( data ) {
+        data = new userModel ( data );
+        data.save ( );
         return "Data Upload Successful";
     }
 }
 
 
 class FetchUser {
-    constructor() {
+    constructor () {
         this.executionDuration = undefined;
     }
     async all ( limit ) {
         limit === undefined ? limit = null : limit = limit;
-        const execStart = Date.now();
-        const data = await userModel.find({ /* find all */ }).limit(limit);
+        const execStart = Date.now ();
+        const data = await userModel.find ( { /* find all */ } ) .limit( limit );
         this.executionDuration = Date.now() - execStart;
         console.log(`Data fetching complete. Time took: ${this.executionDuration}ms`);
         return data;
