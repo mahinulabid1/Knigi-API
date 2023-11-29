@@ -11,9 +11,9 @@ class Debugging {
             }
         */
        console.log("\n\nDEBUG RESULT:\n-----------------------")
-        for( const prop in data ) {
-            console.log(`From ${prop} :`);
-            console.log(`${data [ prop ]}\n`);
+        for( const prop in data ) {         //looping through the OBJECT
+            console.log(`From ${prop} : ${data [ prop ]}\n`);
+            // console.log(`${data [ prop ]}\n`);
         }
     }
 

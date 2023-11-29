@@ -12,7 +12,7 @@ const {
     } = require("../controller/userController");
 
 
-const { ExecutionDuration } = require('../../debug');
+const { ExecutionDuration, Debugging } = require('../../debug');
 // instantiation
 // const newUser = new NewUser();
 // const fetchUser = new FetchUser();
@@ -23,20 +23,24 @@ const { ExecutionDuration } = require('../../debug');
 
 // debugging
 const executionDuration = new ExecutionDuration();
+const debug = new Debugging();
 
 
 
 app.post("/api/v1/user/newUser", upload.array(), async (req, res) => {
-    executionDuration.begin();
+    executionDuration.begin();                      // debugging
     const newUser = new NewUser();
     const hashing = new Hashing();
     let data = JSON.parse(req.body.data);   // coming from form data
     let encryptPass = await hashing.encrypt ( data.password );
     data.password = encryptPass;
-    let status = await newUser.create ( data );
-    const ExecTime = executionDuration.finish();
-    res.status ( 200 ).send( `Log: new user created \n Total Time took ${ExecTime}ms`);
+    let status = await newUser.create ( data ); 
+    const ExecTime = executionDuration.finish();    // debugging
+
     
+
+    res.status ( 200 )
+    .send( `Log: new user created \n Total Time took ${ExecTime}ms`);  
 })
 
 app.post("/api/v1/user/login", upload.array(), async ( req, res ) => {
@@ -49,7 +53,18 @@ app.post("/api/v1/user/login", upload.array(), async ( req, res ) => {
     let data = await fetchUser.userName( username );
     let valid = await userValidation.check( password, data[0].password );
     const ExecTime = executionDuration.finish();    // debugging
-    res.status( 200 ).contentType( "application/json" ).send( `Pass Matched? : ${valid} \nExecution Time:${ExecTime}ms` );
+
+    // Debugging 
+    debug.console(
+        {
+            Route: "/api/v1/user/login",
+            UserInputUsername: data,
+            UserInputPassword: password
+        }
+    )
+
+    res.status( 200 ).contentType( "application/json" )
+    .send( `Pass Matched? : ${valid} \nExecution Time:${ExecTime}ms` );
 })
 
 // fetch single user by ID
@@ -73,7 +88,7 @@ app.patch( "/api/v1/user" , upload.array(), async ( req, res ) => {
     res.status(200).send("Update Complete");
 })
 
-
+// Perform: delete operation using user's ID
 app.delete("/api/v1/user/delete", async ( req, res ) => {
     const deleteUser = new DeleteUser();
     const id = req.query.id;

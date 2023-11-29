@@ -38,9 +38,12 @@ class NewUser {
 
 
 class FetchUser {
-    constructor () {
+
+    constructor ( ) {
         this.executionDuration = undefined;
     }
+
+    // fetch all user, if limit (in number) is defined fetch within limitation[ex: ( 4 ), means fetch only four result ]
     async all ( limit ) {
         limit === undefined ? limit = null : limit = limit;
         const execStart = Date.now ();
