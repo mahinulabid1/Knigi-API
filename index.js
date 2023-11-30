@@ -6,6 +6,9 @@ const bodyParser = require('body-parser');  // didn't find any use yet
 const AWS = require( 'aws-sdk' );
 const multer = require('multer');
 const bcrypt = require( 'bcrypt' );
+const jwt = require( 'jsonwebtoken' );
+const dotenv = require('dotenv');
+dotenv.config({path: './config.env'});
 const app = express( );
 app.use(express.json());        // doesn't work when req is sent using form-data, not raw JSON
 // Enable CORS for all routes
@@ -16,7 +19,8 @@ app.use(express.json());        // doesn't work when req is sent using form-data
 // };
   
 // app.use(cors(corsOptions));                  
-app.use(cors());   
+app.use(cors());  
+ 
 
 const upload = multer ( { dest: 'upload/' } );
 
@@ -56,7 +60,9 @@ module.exports = {
     bodyParser, 
     upload ,
     cloudFrontUrl,
-    bcrypt
+    bcrypt,
+    dotenv,
+    jwt
 };
 
 const url = "mongodb+srv://himahinulabid:DjYFI1UPxb5BRyJl@cluster0.kgeats8.mongodb.net/Knigi?retryWrites=true&w=majority";
