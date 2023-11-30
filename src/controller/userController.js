@@ -1,8 +1,54 @@
 // this is where I'll do database operation
 const userModel = require("../model/userModel");
-const {bcrypt} =require('../../index');
+const {bcrypt, dotenv} =require('../../index');
+const { 
+    mongoose, 
+    generateUniqueKey, 
+    s3, 
+    app, 
+    cloudFrontUrl ,
+    jwt
+} = require ( '../../index' );
+
+dotenv.config();
 
 
+class JWT {
+    
+    constructor ( username, fullname ) {
+        this.username = username;
+        this.fullname = fullname;
+    }
+
+    create ( ) {  
+            
+        // never stores password or sensitive info here.
+        const user = {
+            username : this.username,
+            fullname : this.fullname
+        }  
+ 
+        const secret_key = process.env.SECRET_KEY;
+        const token = jwt.sign( { user }, secret_key, { expiresIn : '4m' } );
+        return token;
+    }
+
+    async verifyy( secret_key, token ) {
+        
+        jwt.verify(token, secret_key, (err, decoded) => {
+            if (err) {
+                console.log(err)
+            }
+            // Verification logic
+            // GOAL: use a promise to return the "decoded" from verifyy function
+            console.log(decoded);
+        });
+ 
+    }
+}
+
+
+// Takes password string as argument, returns encrypted password
 class Hashing {
     async encrypt( password ) {
         let execStart= Date.now();
@@ -15,6 +61,7 @@ class Hashing {
     
 }
 
+// initial user authentication. compare client's passwords with database password
 class UserValidation {
     async check(password, databaseHashPass) {
         let res = await bcrypt.compare(password, databaseHashPass);
@@ -53,10 +100,9 @@ class FetchUser {
         return data;
     }   
 
+    // find user by username
     async userName ( username ) {
-        console.log(username);
         let result = await userModel.find( { userName : username } );
-        console.log(result);
         return result;
     }
 }
@@ -105,4 +151,4 @@ class DeleteUser {
 
 
 
-module.exports = { FetchUser ,NewUser, UpdateUser, DeleteUser, Hashing, UserValidation }
+module.exports = { FetchUser ,NewUser, UpdateUser, DeleteUser, Hashing, UserValidation, JWT }
