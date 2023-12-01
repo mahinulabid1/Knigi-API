@@ -64,7 +64,6 @@ class Hashing {
         console.log(`\nTook Time : ${executionDuration}ms\n`);
         return encryptedPass;
     }
-    
 }
 
 // initial user authentication. compare client's passwords with database password
@@ -180,7 +179,13 @@ class DeleteUser {
     async byId( id ) {
         console.log("starting operation");
         await userModel.deleteOne({ _id : id });
-        return "Successfully Deleted";
+        return "Successfully Deleted";      // validation missing: what if deleteOne failed?
+    }
+
+    async byUserName (username) {
+        console.log("starting operation");
+        await userModel.deleteOne({ userName : username });
+        return "Successfully Deleted";      // validation missing: what if deleteOne failed?
     }
 }
 
