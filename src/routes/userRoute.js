@@ -1,6 +1,9 @@
 const { 
     app,
-    upload} = require("../../index");
+    upload,
+    dotenv} = require("../../index");
+
+
 
 const { 
     NewUser,
@@ -9,6 +12,7 @@ const {
     DeleteUser,
     Hashing,
     UserValidation,
+    JWT
     } = require("../controller/userController");
 
 
@@ -26,60 +30,108 @@ const executionDuration = new ExecutionDuration();
 const debug = new Debugging();
 
 
-
 app.post("/api/v1/user/newUser", upload.array(), async (req, res) => {
     executionDuration.begin();                      // debugging
     const newUser = new NewUser();
     const hashing = new Hashing();
+
     let data = JSON.parse(req.body.data);   // coming from form data
     let encryptPass = await hashing.encrypt ( data.password );
     data.password = encryptPass;
-    let status = await newUser.create ( data ); 
+    await newUser.create ( data ); 
     const ExecTime = executionDuration.finish();    // debugging
-
     
-
     res.status ( 200 )
     .send( `Log: new user created \n Total Time took ${ExecTime}ms`);  
 })
 
+
+// user login function
 app.post("/api/v1/user/login", upload.array(), async ( req, res ) => {
-    executionDuration.begin();                      // debugging
     const fetchUser = new FetchUser();
     const userValidation = new UserValidation();
+
+    let token;
+    executionDuration.begin();                      // debugging
+    
     const clientInput = JSON.parse(req.body.data);
     const username = clientInput.userName;
     const password = clientInput.password;
+
     let data = await fetchUser.userName( username );
-    let valid = await userValidation.check( password, data[0].password );
-    const ExecTime = executionDuration.finish();    // debugging
+    const fullName = data[0].fullName;
+
+    let valid = await userValidation.check( password, data[0].password );       // returns password match: true/false
+    if ( valid === true ) {
+        // create JWT
+        const jwt = new JWT(username, fullName);
+        token = jwt.create();
+        
+        res.cookie('userName', data[0].userName, {
+            maxAge : 1000 * 60, //one minute
+            httpOnly: true,
+            secure: true
+        });
+        res.cookie('fullName', data[0].fullName, {
+            maxAge : 1000 * 60, //one minute
+            httpOnly: true,
+            secure: true
+        });
+        res.cookie('id', data[0]._id, {
+            maxAge : 1000 * 60, //one minute
+            httpOnly: true,
+            secure: true
+        });
+        const ExecTime = executionDuration.finish(); 
+        const response = {
+            passVerification : `Pass Matched? : ${valid}, Execution Time:${ExecTime}ms`,
+            JWT : token
+        }
+        // debugging
+        res.status( 200 ).json( response ); 
+    }
+
+
 
     // Debugging 
-    debug.console(
-        {
-            Route: "/api/v1/user/login",
-            UserInputUsername: data,
-            UserInputPassword: password
-        }
-    )
+    // debug.console(
+    //     {
+    //         Route: "/api/v1/user/login",
+    //         UserInputUsername: data,
+    //         UserInputPassword: password
+    //     }
+    // )
+    
+    
 
-    res.status( 200 ).contentType( "application/json" )
-    .send( `Pass Matched? : ${valid} \nExecution Time:${ExecTime}ms` );
+
 })
+
+// app.get("/verify",async ( req,res ) => {
+//     const jwt = new JWT();
+//     await jwt.verify("lpjzw2if-axbcced6k5-3vukldiq95", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJuYW1lIjoia2F0Mjg4ODg0IiwiZnVsbG5hbWUiOiJLYXQgV2lsbGlzIn0sImlhdCI6MTcwMTI3NjE0NCwiZXhwIjoxNzAxMjc2NDQ0fQ.z81lNdh7207U6KwgNTUEA3DpHWEX2Eaut_41Giu2E4A")
+//     res.end();
+// })
+
+
 
 // fetch single user by ID
 app.get("/api/v1/user", async ( req, res ) => {
+    const jwt = new JWT();
+    const tokendata = await jwt.verify()
     let id = req.query.id;
     let data = await getUserInfo( id );
     res.status( 200 ).send( data );
 })
 
+// fetch all users (for dev purpose )
 app.get("/api/v1/user/allUser",async ( req, res ) =>{
     const fetchUser = new FetchUser();
     let data = await fetchUser.all();
     res.status(200).contentType("application/json").send(data);
 })
 
+// update single user data by ID
 app.patch( "/api/v1/user" , upload.array(), async ( req, res ) => {
     const updateUser = new UpdateUser();
     const id = req.query.id; 
@@ -97,7 +149,7 @@ app.delete("/api/v1/user/delete", async ( req, res ) => {
     res.status(200).send(result);
 })
 
-
+// [dev purpose only], bcrypt functionalities check
 app.get('/api/v1/crpttest',async ( req, res ) => {
     const hashing = new Hashing();
     await hashing.encrypt('hello');
