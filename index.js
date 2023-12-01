@@ -10,17 +10,8 @@ const jwt = require( 'jsonwebtoken' );
 const dotenv = require('dotenv');
 dotenv.config({path: './config.env'});
 const app = express( );
-app.use(express.json());        // doesn't work when req is sent using form-data, not raw JSON
-// Enable CORS for all routes
-// const corsOptions = {
-//     origin: 'http://localhost:5173/', // Specify the allowed domain
-//     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-//     optionsSuccessStatus: 204,
-// };
-  
-// app.use(cors(corsOptions));                  
+app.use(express.json());        // doesn't work when req is sent using form-data, not raw JSON                
 app.use(cors());  
- 
 
 const upload = multer ( { dest: 'upload/' } );
 
@@ -65,7 +56,12 @@ module.exports = {
     jwt
 };
 
-const url = "mongodb+srv://himahinulabid:DjYFI1UPxb5BRyJl@cluster0.kgeats8.mongodb.net/Knigi?retryWrites=true&w=majority";
+// const url = "mongodb+srv://himahinulabid:DjYFI1UPxb5BRyJl@cluster0.kgeats8.mongodb.net/Knigi?retryWrites=true&w=majority";
+const nonProcessedURL = process.env.MONGODB_CONNECT_URL;
+const password = process.env.MONGODB_PASSWORD;
+const dbName = process.env.MONGODB_DATABASE_NAME;
+let url = nonProcessedURL.replace('<password>', password); 
+url = url.replace("<databaseName>", dbName);
 
 // IIFE = FUNCTION CALLS ITSELF
 (async () => {
@@ -86,4 +82,3 @@ const url = "mongodb+srv://himahinulabid:DjYFI1UPxb5BRyJl@cluster0.kgeats8.mongo
 // ROUTE SETTING
 require('./src/routes/shopRoute');
 require('./src/routes/userRoute');
-// its like copy and paste 
