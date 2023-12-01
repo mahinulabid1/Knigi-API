@@ -4,7 +4,6 @@ const {
     dotenv} = require("../../index");
 
 
-
 const { 
     NewUser,
     FetchUser,
@@ -29,7 +28,7 @@ const { ExecutionDuration, Debugging } = require('../../debug');
 const executionDuration = new ExecutionDuration();
 const debug = new Debugging();
 
-
+// create new user
 app.post("/api/v1/user/newUser", upload.array(), async (req, res) => {
     executionDuration.begin();                      // debugging
     const newUser = new NewUser();
@@ -40,7 +39,7 @@ app.post("/api/v1/user/newUser", upload.array(), async (req, res) => {
     data.password = encryptPass;
     await newUser.create ( data ); 
     const ExecTime = executionDuration.finish();    // debugging
-    
+
     res.status ( 200 )
     .send( `Log: new user created \n Total Time took ${ExecTime}ms`);  
 })
@@ -61,7 +60,7 @@ app.post("/api/v1/user/login", upload.array(), async ( req, res ) => {
     let data = await fetchUser.userName( username );
     const fullName = data[0].fullName;
 
-    let valid = await userValidation.check( password, data[0].password );       // returns password match: true/false
+    let valid = await userValidation.check( password, data[0].password );       // returns password match: true/false [using: bcrypt library]
     if ( valid === true ) {
         // create JWT
         const jwt = new JWT(username, fullName);
@@ -92,7 +91,6 @@ app.post("/api/v1/user/login", upload.array(), async ( req, res ) => {
     }
 
 
-
     // Debugging 
     // debug.console(
     //     {
@@ -102,34 +100,24 @@ app.post("/api/v1/user/login", upload.array(), async ( req, res ) => {
     //     }
     // )
     
-    
-
-
 })
 
-// app.get("/verify",async ( req,res ) => {
-//     const jwt = new JWT();
-//     await jwt.verify("lpjzw2if-axbcced6k5-3vukldiq95", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJuYW1lIjoia2F0Mjg4ODg0IiwiZnVsbG5hbWUiOiJLYXQgV2lsbGlzIn0sImlhdCI6MTcwMTI3NjE0NCwiZXhwIjoxNzAxMjc2NDQ0fQ.z81lNdh7207U6KwgNTUEA3DpHWEX2Eaut_41Giu2E4A")
-//     res.end();
-// })
 
 
 
-// fetch single user by ID
-app.get("/api/v1/user", async ( req, res ) => {
-    const jwt = new JWT();
-    const tokendata = await jwt.verify()
-    let id = req.query.id;
-    let data = await getUserInfo( id );
-    res.status( 200 ).send( data );
-})
 
-// fetch all users (for dev purpose )
-app.get("/api/v1/user/allUser",async ( req, res ) =>{
+// fetch single user by JWT
+app.get ("/api/v1/user", async ( req, res ) => { 
     const fetchUser = new FetchUser();
-    let data = await fetchUser.all();
-    res.status(200).contentType("application/json").send(data);
+    const jwt = new JWT();
+    const tokendata = await jwt.verify ( req )
+    // let id = req.query.id;       // don't need query.id since the use of JWT has user related information
+    let data = await fetchUser.userName ( tokendata.user.username ); 
+    res.status ( 200 ).send ( data );
+
 })
+
+
 
 // update single user data by ID
 app.patch( "/api/v1/user" , upload.array(), async ( req, res ) => {
@@ -155,3 +143,18 @@ app.get('/api/v1/crpttest',async ( req, res ) => {
     await hashing.encrypt('hello');
     res.send("done");
 })  
+
+
+// fetch all users (for dev purpose )
+app.get ( "/api/v1/user/allUser", async ( req, res ) =>{
+    const fetchUser = new FetchUser ( );
+    let data = await fetchUser.all ( );
+    res.status ( 200 ).contentType ( "application/json" ).send ( data );
+})
+
+
+// app.get("/verify",async ( req,res ) => {
+//     const jwt = new JWT();
+//     await jwt.verify("lpjzw2if-axbcced6k5-3vukldiq95", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJuYW1lIjoia2F0Mjg4ODg0IiwiZnVsbG5hbWUiOiJLYXQgV2lsbGlzIn0sImlhdCI6MTcwMTI3NjE0NCwiZXhwIjoxNzAxMjc2NDQ0fQ.z81lNdh7207U6KwgNTUEA3DpHWEX2Eaut_41Giu2E4A")
+//     res.end();
+// })
