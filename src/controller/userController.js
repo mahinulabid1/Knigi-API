@@ -21,7 +21,6 @@ class JWT {
     }
 
     create ( ) {  
-            
         // never stores password or sensitive info here.
         const user = {
             username : this.username,
@@ -29,20 +28,27 @@ class JWT {
         }  
  
         const secret_key = process.env.SECRET_KEY;
+        console.log(`Here is the secret key: ${secret_key} \n`);
         const token = jwt.sign( { user }, secret_key, { expiresIn : '4m' } );
         return token;
     }
 
-    async verifyy( secret_key, token ) {
+    async verify( token ) {
+
+        return new Promise( ( resolve, reject ) => {
+
+            const secret_key = process.env.SECRET_KEY;
+            jwt.verify(token, secret_key, (err, decoded) => {
+                if (err) {
+                    console.log(err);
+                    reject(err);
+                }
+
+                resolve(decoded);
+            });
+
+        } )
         
-        jwt.verify(token, secret_key, (err, decoded) => {
-            if (err) {
-                console.log(err)
-            }
-            // Verification logic
-            // GOAL: use a promise to return the "decoded" from verifyy function
-            console.log(decoded);
-        });
  
     }
 }
