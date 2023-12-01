@@ -1,7 +1,7 @@
 const { 
     app,
     upload,
-    dotenv} = require("../../index");
+    } = require("../../index");
 
 
 const { 
@@ -39,7 +39,6 @@ app.post("/api/v1/user/newUser", upload.array(), async (req, res) => {
     data.password = encryptPass;
     await newUser.create ( data ); 
     const ExecTime = executionDuration.finish();    // debugging
-
     res.status ( 200 )
     .send( `Log: new user created \n Total Time took ${ExecTime}ms`);  
 })
@@ -133,9 +132,9 @@ app.patch( "/api/v1/user" , upload.array(), async ( req, res ) => {
 // Perform: delete operation using user's ID
 app.delete("/api/v1/user/delete", async ( req, res ) => {
     const deleteUser = new DeleteUser();
-    const id = req.query.id;
-    console.log(id);
-    let result = await deleteUser.byId( id );
+    const jwt = new JWT();
+    const tokendata = await jwt.verify ( req ) 
+    let result = await deleteUser.byUserName( tokendata.user.username );
     res.status(200).send(result);
 })
 
