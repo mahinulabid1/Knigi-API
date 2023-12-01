@@ -33,10 +33,10 @@ class JWT {
         return token;
     }
 
-    async verify( token ) {
+    async verify( req ) {
 
         return new Promise( ( resolve, reject ) => {
-
+            let token = req.headers['authorization'];
             const secret_key = process.env.SECRET_KEY;
             jwt.verify(token, secret_key, (err, decoded) => {
                 if (err) {
@@ -59,7 +59,7 @@ class Hashing {
     async encrypt( password ) {
         let execStart= Date.now();
         let x = await bcrypt.genSalt(10);
-        let encryptedPass = await bcrypt.hash(password, x);
+        let encryptedPass = await bcrypt.hash(password, x);  // using bcrypt library
         let executionDuration = Date.now() - execStart;
         console.log(`\nTook Time : ${executionDuration}ms\n`);
         return encryptedPass;
@@ -108,7 +108,13 @@ class FetchUser {
 
     // find user by username
     async userName ( username ) {
+        console.log(username)
         let result = await userModel.find( { userName : username } );
+        return result;
+    }
+
+    async byId ( id ) {
+        let result = await userModel.find( { _id : id } );
         return result;
     }
 }
