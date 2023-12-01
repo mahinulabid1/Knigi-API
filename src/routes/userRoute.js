@@ -122,9 +122,11 @@ app.get ("/api/v1/user", async ( req, res ) => {
 // update single user data by ID
 app.patch( "/api/v1/user" , upload.array(), async ( req, res ) => {
     const updateUser = new UpdateUser();
-    const id = req.query.id; 
+    const jwt = new JWT();
+    const tokendata = await jwt.verify ( req )      // i can create method where jwt.username will give me just username, jwt.fullname will give me just full name, more clean code
     const data = JSON.parse(req.body.data);
-    updateUser.byId(id, data);
+    const userName = tokendata.user.username
+    updateUser.byUserName( userName, data );
     res.status(200).send("Update Complete");
 })
 
