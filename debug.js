@@ -27,11 +27,11 @@ class ExecutionDuration {
         this.executionEnd = undefined;
     }
 
-    begin() {
+    monitorBegin() {
         this.executionStart = Date.now ( );
     }
 
-    finish() {
+    monitorEnd() {
         this.executionEnd = Date.now ( );
         this.executionDuration = this.executionEnd - this.executionStart;
         return this.executionDuration;
