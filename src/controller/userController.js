@@ -124,49 +124,43 @@ class UpdateUser {
         this.executionDuration = undefined;
     }
 
-    async byId( id , data , option ) {
-        // validation
-        if(id === undefined) {
-            console.log("ID is undefined at byId( id , data , option ) at userController.js");
-            return;
-        }
-        else if( data === undefined ) {
-            console.log("data is undefined at byId( id , data , option ) at userController.js");
-            return;
-        } else if(id === undefined && data === undefined ) {
-            console.log("data and id are undefined at byId( id , data , option ) at userController.js");
-            return;
-        }
-
-
+    async dbOperation ( operationType, parameterObject ) {
+        let operationResult;
+        let { id, data, option, username } = parameterObject;
         option === undefined ? option = null : option = option;
         const execStart = Date.now();
-        let x = await userModel.findByIdAndUpdate(id , data, option);
+        if( operationType ===  'byId' ) {
+            operationResult = await userModel.findByIdAndUpdate( id , data, option ); 
+        } 
+        else if( operationType === 'byUserName' ) {
+            operationResult = await userModel.findOneAndUpdate( { userName: username } , data, option);
+        }
+
         this.executionDuration = Date.now() - execStart;
-        x !== undefined || null ? console.info ( `Updated Successfully (${this.executionDuration}ms)` ) : console.info( 'Update failed' );
+        operationResult !== undefined || null ? console.info ( `Updated Successfully (${this.executionDuration}ms)` ) : console.info( 'Update failed' );
+    }
+
+    // update user information using by ID
+    async byId( id , data , option ) {
+        //validation
+        if( id === undefined || data === undefined ) {
+            console.log( `Incorrect Parameter, class UpdateUser.byID\n Aborting Operation` );
+            return ;
+        }
+
+        this.dbOperation( 'byId', { id, data,option } )
     }
 
 
+    // update user information by username
     async byUserName( username , data , option ) {
         // validation
-        if(username === undefined) {
-            console.log("ID is undefined at byId( id , data , option ) at userController.js");
-            return;
-        }
-        else if( data === undefined ) {
-            console.log("data is undefined at byId( id , data , option ) at userController.js");
-            return;
-        } else if(username === undefined && data === undefined ) {
-            console.log("data and id are undefined at byId( id , data , option ) at userController.js");
-            return;
+        if( username === undefined || data === undefined ) {
+            console.log( `Incorrect Parameter, class UpdateUser.byID\n Aborting Operation` );
+            return ;
         }
 
-
-        option === undefined ? option = null : option = option;
-        const execStart = Date.now();
-        let x = await userModel.findOneAndUpdate({userName: username} , data, option);
-        this.executionDuration = Date.now() - execStart;
-        x !== undefined || null ? console.info ( `Updated Successfully (${this.executionDuration}ms)` ) : console.info( 'Update failed' );
+        this.dbOperation( 'byUserName', { username, data, option } );
     }
 }
 
