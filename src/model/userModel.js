@@ -58,16 +58,16 @@ const UserSchema = new mongoose.Schema(
     {
         fullName : {
             type :String,
-            required : true
+            required : [true, 'fullName is missing. Operation Aborted']
         },
         userName : {
             type : String,
-            required : true,
-            unique: true
+            required : [true, "username is required creating new user. Operation is aborted"],
+            // unique: true  // will be creating custom validator 
         },
         password : {
             type : String,
-            required : true
+            required : [true, "password is required creating new user"],
         }
     },
     {
