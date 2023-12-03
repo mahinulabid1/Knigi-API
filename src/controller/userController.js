@@ -75,15 +75,39 @@ class UserValidation {
 }
 
 
+// checks if the username already exist, input: username, output: "unique"/"notUnique"
+class UniqueUser {
+    constructor (username) {
+        this.username = username;
+    }
+    async verify () {
+        let result = await userModel.find({userName : this.username});  // returns: array, and empty array on finding no result
+
+        if( result.length === 0) {
+            return "unique";
+        }else {
+            return "notUnique"
+        }
+    }
+}
+
+
 class NewUser {
 
-    constructor( ) {
-
+    constructor( data ) {
+        this.data = data;
     }
 
-    async create ( data ) {
-        data = new userModel ( data );
-        data.save ( );
+    async create ( ) {
+        try{
+            const data = new userModel ( this.data );
+            await data.save ( );
+        }catch(err) {
+            if(err) {
+                console.log(err)
+            }
+        }
+        
         return "Data Upload Successful";
     }
 }
@@ -185,4 +209,4 @@ class DeleteUser {
 
 
 
-module.exports = { FetchUser ,NewUser, UpdateUser, DeleteUser, Hashing, UserValidation, JWT }
+module.exports = { FetchUser ,NewUser, UpdateUser, DeleteUser, Hashing, UserValidation, JWT, UniqueUser }
