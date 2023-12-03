@@ -11,7 +11,8 @@ const {
     DeleteUser,
     Hashing,
     UserValidation,
-    JWT
+    JWT,
+    UniqueUser
     } = require( '../controller/userController');
 
 
@@ -25,16 +26,33 @@ const debug = new Debugging( );
 // create new user
 app.post('/api/v1/user/newUser', upload.array( ), async ( req, res ) => {
     executionDuration.monitorBegin( );                      // debugging
-    const newUser = new NewUser( );
     const hashing = new Hashing( );
-
     let data = JSON.parse( req.body.data );   // coming from form data
-    let encryptPass = await hashing.encrypt ( data.password );
-    data.password = encryptPass;
-    await newUser.create ( data ); 
-    const ExecTime = executionDuration.monitorEnd();    // debugging
-    res.status ( 200 )
-    .send( `Log: new user created \n Total Time took ${ExecTime}ms`);  
+
+    //user input validation
+    let isValid = debug.fieldInputValidation([data.userName, data.password, data.fullName]);
+    if (isValid === false ) {
+        res.send("Data missing. Request can not be completed");
+    }
+
+    // unique user validation
+    const uniqueUser = new UniqueUser(data.userName);
+    const isUnique = await uniqueUser.verify();
+    
+    if( isUnique === 'unique' ) {
+        let encryptPass = await hashing.encrypt ( data.password );
+        data.password = encryptPass;
+        const newUser = new NewUser( data );
+        await newUser.create ( ); 
+        const ExecTime = executionDuration.monitorEnd();    // debugging
+        res.status ( 200 )
+        .send( `Log: new user created \n Total Time took ${ExecTime}ms`); 
+    }
+    else {
+        const ExecTime = executionDuration.monitorEnd();    // debugging
+        res.status(400).send(`The username is not Unique. Try with Another Username \n Took time: ${ExecTime}ms`)
+    }
+     
 })
 
 
@@ -159,11 +177,7 @@ app.get ( '/api/v1/user/allUser', async ( req, res ) =>{
 
 
 app.get('/test', (req, res) =>{ 
-    const x = 2;
-    if(x ===1){
-        res.send("it is 1");
-    } 
-    else if (x === 2) {
-        res.send("it is 2")
-    }
+    const val = new UniqueUser("hello99");
+    val.verify();
+    res.send("done");
 })
