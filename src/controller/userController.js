@@ -201,9 +201,14 @@ class DeleteUser {
     }
 
     async byUserName (username) {
-        console.log("starting operation");
-        await userModel.deleteOne({ userName : username });
-        return "Successfully Deleted";      // validation missing: what if deleteOne failed?
+        if(username === undefined) {
+            throw new Error("Username not defined!");
+        }else {
+            console.log("starting operation");
+            await userModel.deleteOne({ userName : username });
+            return "Successfully Deleted";      // validation missing: what if deleteOne failed?
+        }
+
     }
 }
 

@@ -66,9 +66,10 @@ app.post( '/api/v1/user/login', upload.array ( ), async ( req, res ) => {
     const clientInput = JSON.parse ( req.body.data );
     const username = clientInput.userName;
     const password = clientInput.password;
+    username === undefined || password === undefined ? res.send("[Blank] username, password") : console.log("Received Input");
 
     let data = await fetchUser.userName( username );
-    if (data.length === 0) {
+    if (data.length === 0) {       // is there any data with this username?
         return res.status(400).json({ error: "This username doesn't exist" });
     }
 
@@ -122,13 +123,20 @@ app.post( '/api/v1/user/login', upload.array ( ), async ( req, res ) => {
 
 // fetch single user by JWT
 app.get ( '/api/v1/user', async ( req, res ) => { 
-    const fetchUser = new FetchUser();
-    const jwt = new JWT ( );
-    const tokendata = await jwt.verify ( req )
-    // let id = req.query.id;       // don't need query.id since the use of JWT has user related information
-    let data = await fetchUser.userName ( tokendata.user.username ); 
-    res.status ( 200 ).send ( data );
-
+    try {
+        const fetchUser = new FetchUser();
+        const jwt = new JWT ( );
+        const tokendata = await jwt.verify ( req )
+        // let id = req.query.id;       // don't need query.id since the use of JWT has user related information
+        let data = await fetchUser.userName ( tokendata.user.username ); 
+        data.length === 0 ? res.status(400).send("Username not found.") : console.log("Username found in database.") ;
+        res.status ( 200 ).send ( data );
+    }catch (err) {
+        if(err) {
+            res.send(err);
+        }
+    }
+    
 })
 
 
@@ -137,20 +145,29 @@ app.get ( '/api/v1/user', async ( req, res ) => {
 app.patch( '/api/v1/user' , upload.array ( ), async ( req, res ) => {
     const updateUser = new UpdateUser ( );
     const jwt = new JWT ( );
-    const tokendata = await jwt.verify ( req )      // i can create method where jwt.username will give me just username, jwt.fullname will give me just full name, more clean code
-    const data = JSON.parse ( req.body.data );
-    const userName = tokendata.user.username
-    updateUser.byUserName( userName, data );
-    res.status ( 200 ).send ( 'Update Complete' );
+    try{
+        const tokendata = await jwt.verify ( req )      // i can create method where jwt.username will give me just username, jwt.fullname will give me just full name, more clean code
+        const data = JSON.parse ( req.body.data );
+        const userName = tokendata.user.username
+        updateUser.byUserName( userName, data );
+        res.status ( 200 ).send ( 'Update Complete' );
+    } catch ( err ) {
+        res.send(err);
+    }
 })
 
 // Perform: delete operation using user's ID
 app.delete('/api/v1/user/delete', async ( req, res ) => {
-    const deleteUser = new DeleteUser();
-    const jwt = new JWT();
-    const tokendata = await jwt.verify ( req ) 
-    let result = await deleteUser.byUserName( tokendata.user.username );
-    res.status(200).send(result);
+    try{
+        const deleteUser = new DeleteUser ( );
+        const jwt = new JWT ( );
+        const tokendata = await jwt.verify ( req ) 
+        let result = await deleteUser.byUserName( tokendata.user.username );
+        res.status(200).send(result);
+    }catch( err ) {
+        res.send(err);
+    }
+    
 })
 
 // [dev purpose only], bcrypt functionalities check
