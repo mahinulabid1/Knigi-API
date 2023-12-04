@@ -17,6 +17,16 @@ class Debugging {
         }
     }
 
+    // input array of elements, checks array elementss have undefined function
+    // output : true/false, true= valid, false = not valid;
+    fieldInputValidation (arrayInput) {
+        for(let i = 0; i < arrayInput.length; i++ ) {
+            if( arrayInput[i] === undefined ) {
+                return false;
+            }
+        }
+    }
+
 }
 
 
