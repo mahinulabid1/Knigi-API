@@ -1,4 +1,5 @@
 const fs = require( 'fs' );
+require('module-alias/register')
 
 const { 
     express, 
@@ -6,7 +7,7 @@ const {
     router, 
     upload, 
     s3,
-    cloudFrontUrl } = require ( '../../index' );
+    cloudFrontUrl } = require ( '@index' );
 
 const { 
     getAllShopItem, 
@@ -18,7 +19,7 @@ const {
     UploadData,
     GetData,
     DeleteRecord,
-    UpdateDB } = require ( '../controller/shopController');
+    UpdateDB } = require ( '@controller/shopController');
 
 const { UploadFile, DeleteFile } = require( '../AWS_S3/FileController' );
 
@@ -100,7 +101,7 @@ const fileFields = [
 app
     .post( "/api/v1/newShopItem", upload.fields(fileFields) ,async ( req, res ) =>{  
         // INFO: req.fields give an array containing multiple object
-        // INFO: to acces filename = req.files.keyname[0].filename 
+        // INFO: to access it filename = req.files.keyname[0].filename 
 
         try{   
             const image1 = req.files.bookPicture[0].filename;

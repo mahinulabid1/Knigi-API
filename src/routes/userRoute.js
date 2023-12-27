@@ -156,6 +156,7 @@ app.patch( '/api/v1/user' , upload.array ( ), async ( req, res ) => {
     }
 })
 
+
 // Perform: delete operation using user's ID
 app.delete('/api/v1/user/delete', async ( req, res ) => {
     try{
