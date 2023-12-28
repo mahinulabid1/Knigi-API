@@ -10,7 +10,7 @@
   "author": "Abid",
   "license": "ISC",
   "dependencies": {
-    "aws-sdk": "^2.1497.0",
+    "aws-sdk": "^2.1526.0",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
@@ -22,13 +22,14 @@
     "multer": "^1.4.5-lts.1",
     "nodemon": "^3.0.1"
   },
-  "_moduleAliases": { 
-  "@root"      : ".", 
-  "@controller"      : "src/controller", 
-  "@index" : "./index.js",
-  "@my_module" : "lib/some-file.js", 
-  "something"  : "src/foo"
+  "_moduleAliases": {
+    "@root": ".",
+    "@controller": "src/controller",
+    "@index": "./index.js",
+    "@my_module": "lib/some-file.js",
+    "something": "src/foo"
   },
-   
-"_moduleDirectories": ["node_modules_custom"]
+  "_moduleDirectories": [
+    "node_modules_custom"
+  ]
 }
