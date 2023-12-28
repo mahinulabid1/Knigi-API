@@ -3,7 +3,10 @@ const cors = require( 'cors' );
 const mongoose = require ( 'mongoose' );
 const router = express.Router( );
 const bodyParser = require('body-parser');  // didn't find any use yet
-const AWS = require( 'aws-sdk' );
+// const AWS = require( '@aws-sdk' );
+
+const { S3 } = require('@aws-sdk/client-s3');
+
 const multer = require('multer');
 const bcrypt = require( 'bcrypt' );
 const jwt = require( 'jsonwebtoken' );
@@ -11,23 +14,37 @@ const dotenv = require('dotenv');
 dotenv.config({path: './config.env'});
 const app = express( );
 app.use(express.json());        // doesn't work when req is sent using form-data, not raw JSON                
-app.use(cors());  
+app.use(cors());
 
 const upload = multer ( { dest: 'upload/' } );
 
 
-  
+
 
 
 // Set up AWS configuration
-AWS.config.update({
-  accessKeyId: 'AKIAUYPP6YV4XQS665GF',
-  secretAccessKey: '9TND7wbQ8GCMeAFSOvPNrz0+k1gGdrZHJ2IHMizT',
-  region: 'ap-south-1' // Change to your AWS region
-});
+// JS SDK v3 does not support global configuration.
+// Codemod has attempted to pass values to each service client in this file.
+// You may need to update clients outside of this file, if they use global config.
+// AWS.config.update({
+//   accessKeyId: 'AKIAUYPP6YV4XQS665GF',
+//   secretAccessKey: '9TND7wbQ8GCMeAFSOvPNrz0+k1gGdrZHJ2IHMizT',
+//   region: 'ap-south-1' // Change to your AWS region
+// });
 
 // initialize s3
-const s3 = new AWS.S3();
+const s3 = new S3({
+    credentials: {
+        accessKeyId: 'AKIAUYPP6YV4XQS665GF',
+        secretAccessKey: '9TND7wbQ8GCMeAFSOvPNrz0+k1gGdrZHJ2IHMizT'
+    },
+
+    // Change to your AWS region
+    region: 'ap-south-1'
+});
+
+
+
 
 const cloudFrontUrl = 'https://d19a566nyr3opx.cloudfront.net';
 
@@ -60,7 +77,7 @@ module.exports = {
 const nonProcessedURL = process.env.MONGODB_CONNECT_URL;
 const password = process.env.MONGODB_PASSWORD;
 const dbName = process.env.MONGODB_DATABASE_NAME;
-let url = nonProcessedURL.replace('<password>', password); 
+let url = nonProcessedURL.replace('<password>', password);
 url = url.replace("<databaseName>", dbName);
 
 // IIFE = FUNCTION CALLS ITSELF
