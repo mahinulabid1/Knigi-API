@@ -1,8 +1,6 @@
-const { 
-    app,
-    upload,
-    } = require('../../index');
+const { app } = require( '../../index' );
 
+const { upload } = require( '@additionalFunction/multer.config.js' );
 
 const { 
     NewUser,

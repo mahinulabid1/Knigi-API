@@ -1,6 +1,9 @@
-const { generateUniqueKey, s3 } = require('../../index');
+require('module-alias/register')
+const generateUniqueKey  = require('@additionalFunction/generateUniqueKey.js');
+const { s3 } = require('@awsS3/AWS.config.js'); 
 const fs = require('fs');
-const cloudFrontUrl = 'https://d19a566nyr3opx.cloudfront.net';
+const cloudFrontUrl = process.env.CLOUDFRONT_URL;
+// console.log(cloudFrontUrl)
 
 // function : uploads image to the AWS S3 bucket
 class UploadFile {
