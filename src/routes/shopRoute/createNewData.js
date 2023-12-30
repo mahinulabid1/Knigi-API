@@ -1,32 +1,28 @@
 const { app } = require('@index');
-const { s3FileDelete } = require('@awsS3/s3.deleteController.js');
-const ShopModel = require('@model/shopModel');
+const insertNewData = require('@controller/shopController/insertNewData.js');
+
 
 app.post("/api/v1/newShopItem", async (req, res) => {
-   try {
-      const data = req.body.knigi_parsedData;
-      const finalData = new ShopModel(data);
-      await finalData.save();
-      res.send("data uploaded");
-   } catch (err) {
-      /*
-      - if there is an error uploading database image then
-      - delete the file that was uploaded
-      */
-      let imageCollection = req.body.knigi_parsedData.imageCollection;
-      let filePathProcess1 = imageCollection.productImage.imageName;
-      filePathProcess1 = `/testUpload/shopItem/${filePathProcess1}`;
-      let filePathProcess2 =  imageCollection.thumbnail.imageName
-      filePathProcess2 = `/testUpload/shopItem/${filePathProcess2}`;
+   try{
+      const result = await insertNewData(req);
+      res.status(200).json( {
+         status : result,
+      } )
 
-      s3FileDelete(filePathProcess1);
-      s3FileDelete(filePathProcess2);
-      
-      res.status(400).json({
-         message : "There is a problem while uploading the file",
-         error : err
-      })
+   } catch(err) {
+      console.log(err);
+
+      res.status(400).json( {
+         status : 'There is an error while uploading',
+         error_Summary : 'One of the required filed was not given',
+         required_field : {
+            bookPicture : 'image file of Book',
+            thumbnail : 'thumbnail image for the book that will be shown when the book is featured on website',
+            productTitle: 'The name of the book',
+            productAboutInfo : 'Details about the product information. What the book is about.',
+            productSpecs: 'how many pages, is it off-set print, where is it printed and Dimensions',
+         }
+      } )
    }
-
 })
 
