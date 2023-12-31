@@ -2,7 +2,9 @@ const { app } = require('@index');
 const insertNewData = require('@controller/shopController/insertNewData.js');
 
 
+
 app.post("/api/v1/newShopItem", async (req, res) => {
+   
    try{
       const result = await insertNewData(req);
       res.status(200).json( {
