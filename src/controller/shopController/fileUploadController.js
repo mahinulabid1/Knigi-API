@@ -16,16 +16,13 @@ const uploadImage = async ( req ) => {
          let bookPicture = req.files.bookPicture[0].filename;
          bookPicture = fs.readFileSync(`${__dirname}/../../../upload/${bookPicture}`);
          const uploadBookPicture = await s3FileUpload(bookPicture, "testUpload/shopItem");
-         console.log(`${uploadBookPicture}`)
    
          let thumbnail = req.files.thumbnail[0].filename;
          thumbnail = fs.readFileSync(`${__dirname}/../../../upload/${thumbnail}`);
          const uplaodThumbnail = await s3FileUpload(bookPicture, "testUpload/shopItem");
-         console.log(`${uplaodThumbnail}`)
    
          req.body.bookPicture = uploadBookPicture;
          req.body.thumbnail = uplaodThumbnail;
-         // console.log(req.body);
          
       } 
    
