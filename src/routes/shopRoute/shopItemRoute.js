@@ -12,7 +12,7 @@
 
 const { router, app } = require('@index');
 const insertNewData = require('@controller/shopController/insertNewData.js');
-const updateShopItem = require('@controller/shopController/updateController.js');
+// const updateShopItem = require('@controller/shopController/updateController.js');
 
 app.route('/api/v1/shopItem')
    .post(async (req, res) => {
@@ -56,5 +56,9 @@ app.route('/api/v1/shopItem')
          })
       }
       
+   })
+
+   .get( async ( req, res ) => {
+
    })
 

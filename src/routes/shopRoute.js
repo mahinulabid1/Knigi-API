@@ -127,4 +127,4 @@ app
 
 // shopItem route
 require('./shopRoute/shopItemRoute');
-require('./shopRoute/updateShopItem')
+// require('./shopRoute/updateShopItem')
