@@ -1,7 +1,7 @@
 const { app } = require('@index');
 const cloudfront = process.env.CLOUDFRONT_URL;
 
-app.post('/api/v1/newShopItem', async (req, res, next) => {
+app.post('/api/v1/shopItem', async (req, res, next) => {
    //console.log(req.body.knigi_parsedData); // getting undefined
 
    const parsedData = {

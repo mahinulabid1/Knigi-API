@@ -17,7 +17,7 @@ const fileFields = [
   }
 ]
 
-app.post("/api/v1/newShopItem", upload.fields(fileFields), async (req, res, next) =>{
+app.post("/api/v1/shopItem", upload.fields(fileFields), async (req, res, next) =>{
   // I can only use upload.fields(fileFields) once for each request. can't use twice.
   next();
 })

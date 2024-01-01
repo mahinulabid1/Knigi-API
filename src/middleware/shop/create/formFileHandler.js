@@ -1,7 +1,7 @@
 const { app } = require('@index');
 const imageUpload = require('@controller/shopController/fileUploadController.js')
 
-app.post("/api/v1/newShopItem", async (req, res, next) => {
+app.post("/api/v1/shopItem", async (req, res, next) => {
 
    try{
       await imageUpload(req);

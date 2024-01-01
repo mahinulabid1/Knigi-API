@@ -30,8 +30,6 @@ const deleteRecord = new DeleteRecord();
 const deleteFile = new DeleteFile();
 const update = new UpdateDB();
 
-// create/insert new data route
-require("./shopRoute/createNewData");
 
 
 //default routing
@@ -114,12 +112,19 @@ app
   })
 
 
-app.post('/test', upload.fields([{name:"anykey", maxCount: 1}]), (req,res) => {
+// app.post('/test', upload.fields([{name:"anykey", maxCount: 1}]), (req,res) => {
 
-  res.send("hello")
-})
+//   res.send("hello")
+// })
 
 
 // app.listen(8000);
 
 
+
+// create/insert new data route
+// require("./shopRoute/newShopItem");
+
+// shopItem route
+require('./shopRoute/shopItemRoute');
+require('./shopRoute/updateShopItem')
