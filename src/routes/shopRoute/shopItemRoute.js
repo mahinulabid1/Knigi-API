@@ -69,9 +69,9 @@ app.route('/api/v1/shopItem')
       }
       
       catch( err ) {
-         console.log(err);
-         res.status.json({
-            error: 'unable to fetch data!'
+         res.status(404).json({
+            error: 'unable to fetch data!',
+            message : err.message
          })
       }
       
