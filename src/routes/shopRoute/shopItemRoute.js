@@ -14,6 +14,7 @@ const { router, app } = require('@index');
 const insertNewData = require('@controller/shopController/insertNewData.js');
 const getShopItem = require( '@controller/shopController/getShopItem.js' );
 const updateShopItem = require('@controller/shopController/updateController.js');
+const deleteRecord = require('@controller/shopController/deleteController.js');
 
 app.route('/api/v1/shopItem')
    .post(async (req, res) => {
@@ -56,7 +57,6 @@ app.route('/api/v1/shopItem')
             status: 'upload operation failed. Please try again'
          })
       }
-      
    })
 
    .get( async ( req, res ) => {
@@ -74,6 +74,24 @@ app.route('/api/v1/shopItem')
             message : err.message
          })
       }
-      
    })
+
+   .delete( async ( req, res ) => {
+      try {
+         await deleteRecord(req);
+         res.status(200).json({
+            status : "Deletion Successful!"
+         })
+      }
+      
+      catch (err) {
+         res.status(200).json({
+            error : 'operation failed!',
+            message: err.message
+         });
+      }  
+   })
+
+
+
 
