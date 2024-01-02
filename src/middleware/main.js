@@ -13,3 +13,5 @@ require('./shop/create/formDataParser');
 require('./shop/update/uploadHandler')
 require('./shop/update/formDataParser')
 
+// delete middleware
+require('./shop/delete/idValidation')
