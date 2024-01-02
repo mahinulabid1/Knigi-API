@@ -12,7 +12,8 @@
 
 const { router, app } = require('@index');
 const insertNewData = require('@controller/shopController/insertNewData.js');
-// const updateShopItem = require('@controller/shopController/updateController.js');
+const getShopItem = require( '@controller/shopController/getShopItem.js' );
+const updateShopItem = require('@controller/shopController/updateController.js');
 
 app.route('/api/v1/shopItem')
    .post(async (req, res) => {
@@ -59,6 +60,20 @@ app.route('/api/v1/shopItem')
    })
 
    .get( async ( req, res ) => {
-
+      try {
+         const result = await getShopItem(req);
+         res.status(200).json({
+            status: 'Data fetching Complete',
+            data : result
+         })
+      }
+      
+      catch( err ) {
+         console.log(err);
+         res.status.json({
+            error: 'unable to fetch data!'
+         })
+      }
+      
    })
 

@@ -22,7 +22,7 @@ const {
 
 const { UploadFile, DeleteFile } = require( '../AWS_S3/FileController' );
 
-app.use(express.json());
+// app.use(express.json());
 
 const uploadFile = new UploadFile();
 const fetchData = new GetData();
