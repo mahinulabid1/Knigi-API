@@ -36,6 +36,7 @@ require('./dbConnection');
 require('./src/middleware/main');
 // middleware must be declared before router
 
-require('./src/routes/shopRoute');
-require('./src/routes/userRoute');
+require('./src/routes/shopRoute/shopItemRoute');
+// require('./src/routes/userRoute/userRoute');
+require('./src/routes/userRoute/userRoute')
 
