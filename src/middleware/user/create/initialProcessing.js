@@ -1,5 +1,5 @@
 const { app } = require('@index');
-const { upload } = require('@multer.config.js');
+const { upload } = require('@multer.config');
 
 const fileFields = [
    {
@@ -12,3 +12,4 @@ app.post('/api/v1/user', upload.fields(fileFields), (req, res, next) => {
    // initial processing of request object
    next();
 })
+
