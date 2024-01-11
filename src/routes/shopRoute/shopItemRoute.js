@@ -9,39 +9,20 @@
  * I'm categorizing the API request.
 */
 
-
-const { router, app } = require('@index');
+const express = require('express');
+const router = express.Router();
 const insertNewData = require('@controller/shopController/insertNewData.js');
 const getShopItem = require( '@controller/shopController/getShopItem.js' );
 const updateShopItem = require('@controller/shopController/updateController.js');
 const deleteRecord = require('@controller/shopController/deleteController.js');
 
-app.route('/api/v1/shopItem')
-   .post(async (req, res) => {
-   
-      try{
-         const result = await insertNewData(req);
-         res.status(200).json( {
-            status : result,
-         } )
-      } 
-      
-      catch(err) {
-         console.log(err);
 
-         res.status(400).json( {
-            status : 'There is an error while uploading',
-            error_Summary : 'One of the required filed was not given',
-            required_field : {
-               bookPicture : 'image file of Book',
-               thumbnail : 'thumbnail image for the book that will be shown when the book is featured on website',
-               productTitle: 'The name of the book',
-               productAboutInfo : 'Details about the product information. What the book is about.',
-               productSpecs: 'how many pages, is it off-set print, where is it printed and Dimensions',
-            }
-         } )
-      }
-   })
+
+
+router.route('/shopItem')
+   .post(
+      insertNewData.uploadImage
+      )
 
 
    .patch(async ( req, res ) => {
@@ -59,22 +40,7 @@ app.route('/api/v1/shopItem')
       }
    })
 
-   .get( async ( req, res ) => {
-      try {
-         const result = await getShopItem(req);
-         res.status(200).json({
-            status: 'Data fetching Complete',
-            data : result
-         })
-      }
-      
-      catch( err ) {
-         res.status(404).json({
-            error: 'unable to fetch data!',
-            message : err.message
-         })
-      }
-   })
+   .get(getShopItem.all)
 
    .delete( async ( req, res ) => {
       try {
@@ -92,6 +58,34 @@ app.route('/api/v1/shopItem')
       }  
    })
 
+router.get('/shopItem/:id', getShopItem.single);
+
+module.exports = router;
 
 
 
+// async (req, res) => {
+   
+//    try{
+//       const result = await insertNewData(req);
+//       res.status(200).json( {
+//          status : result,
+//       } )
+//    } 
+   
+//    catch(err) {
+//       console.log(err);
+
+//       res.status(400).json( {
+//          status : 'There is an error while uploading',
+//          error_Summary : 'One of the required filed was not given',
+//          required_field : {
+//             bookPicture : 'image file of Book',
+//             thumbnail : 'thumbnail image for the book that will be shown when the book is featured on website',
+//             productTitle: 'The name of the book',
+//             productAboutInfo : 'Details about the product information. What the book is about.',
+//             productSpecs: 'how many pages, is it off-set print, where is it printed and Dimensions',
+//          }
+//       } )
+//    }
+// }

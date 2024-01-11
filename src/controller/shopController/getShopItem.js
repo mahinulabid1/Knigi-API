@@ -1,66 +1,49 @@
 const shopModel = require('@model/shopModel');
+const catchAsync = require('@utils/catchAsync.js')
 
-
-const getShopItem = async ( req ) => {
-   try{
-      const query = req.query;
-
-      if(query.id !== undefined ) {
-         // get specific id's data
-         const id = query.id;
-         const result = await shopModel.findById(id);
-         const resultValidation = Object.keys(result).length === 0;
-
-         // validation
-         if( resultValidation === true ) {
-            return "No Data found!"
-         }
-         else {
-            return result;
-         }
-      }
-
-      else {
-         if( query.limit === undefined ) {
-            // get all data
-            const result = await shopModel.find( { } );
-
-            //validation
-            if(result.length === 0) {
-               return 'No data found!'
-            }
-            else {
-               return result;
-            }
-         }
-         
-         else {
-            // get data within limit
-            const limit = query.limit;
-            const result = await shopModel.find( { } ).limit( limit );
-            
-            //validation
-            if(result.length === 0) {
-               return 'No data found!'
-            }
-            else {
-               return result;
-            }
-         }
-
-      }
+exports.all = catchAsync( async( req, res, next )=>{
+   let result;
+   if(req.query.limit) { // undefined retuns false, defined value returns true
+      const limit = query.limit;
+      result = await shopModel.find( { } ).limit( limit );
+   }else {
+      result = await shopModel.find( { } );
    }
-   catch(err) {
-      const message = err.message;
-      const errTypeOne = message.includes('Cast to ObjectId failed');
-      if(errTypeOne === true) {
-         throw new Error('Id not found!')
-      }
-      else {
-         throw new Error(err); 
-      }
-   }
-   
-}
 
-module.exports = getShopItem;
+   //validation
+   if(Object.keys(result).length === 0){
+      res.status(200).json({
+         status: 'success',
+         result : 'No data found!'
+      })
+   }else {
+      res.status(200).json({
+         status: 'success',
+         result : result.length,
+         data : {
+            result
+         }
+      })
+   }
+})
+
+exports.single = catchAsync( async (req, res, next) => {
+   const id = req.params.id;
+   const result = await shopModel.findById(id);
+
+   // result validation
+   if(Object.keys(result).length === 0) {
+      res.status(200).json({
+         status: 'success',
+         data : 'No data found!'
+      })
+   } else {
+      res.status(200).json({
+         status: 'success',
+         data : {
+            result
+         }
+      })
+   }
+})
+

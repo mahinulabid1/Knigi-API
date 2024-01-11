@@ -1,42 +1,44 @@
 const express = require('express');
-const router = express.Router();
 const app = express();
-app.listen(8000);
-
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-
-const dotenv = require('dotenv');
-dotenv.config({ path: './config.env' });
-
-// requiring module-alias to use its functionality
-require('module-alias/register')
-
+const morgan = require('morgan');
+const rateLimit = require('express-rate-limit');
 const cors = require('cors');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
+const hpp = require('hpp');
+const bodyParser = require('body-parser');
+const cookieParser = require ('cookie-parser');
+
+const errorHandler = require("./src/controller/errorController");
+const ShopRouter = require('./src/routes/shopRoute/shopItemRoute');
+
+// app.enable('trust proxy');
+
+const limiter = rateLimit({
+   max: 100,
+   windowMs: 60 * 60 * 1000,
+   message: 'Too many requests from this IP, please try again in an hour!'
+})
+app.use('/api', limiter);
+app.use(morgan('dev'));
+app.use(helmet());
 app.use(cors());
+app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+app.use(cookieParser());
+app.use(mongoSanitize()); // parse body before these three, parse data before security
+app.use(xss());
+app.use(hpp());
 
-// middleware
-app.use(express.json());
 
-module.exports = {
-   express,
-   app,
-   mongoose,
-   router,
-   bcrypt,
-   dotenv,
-   jwt,
-};
+// Routes
+app.use('/api/v1', ShopRouter);
 
-//DB CONNECT
-require('./dbConnection');
 
-// ROUTE SETTING
-require('./src/middleware/main');
-// middleware must be declared before router
+// GLOBAL ERROR HANDLING MIDDLEWARE
+app.use(errorHandler);
 
-require('./src/routes/shopRoute/shopItemRoute');
-// require('./src/routes/userRoute/userRoute');
-require('./src/routes/userRoute/userRoute')
+
+module.exports = { app };
 

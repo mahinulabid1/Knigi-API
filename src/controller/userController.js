@@ -2,7 +2,6 @@
 const userModel = require("../model/userModel");
 const { bcrypt, dotenv } = require('@index');
 const {
-   mongoose,
    //  generateUniqueKey, 
    app,
 

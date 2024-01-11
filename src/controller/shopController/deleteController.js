@@ -1,6 +1,6 @@
 const shopModel = require('@model/shopModel');
 
-const deleteRecord = async ( req ) => {
+module.exports = async ( req ) => {
    
 
    try {
@@ -19,5 +19,3 @@ const deleteRecord = async ( req ) => {
       }
    } 
 }
-
-module.exports = deleteRecord;
