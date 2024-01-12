@@ -34,6 +34,7 @@ module.exports = (err, req, res, next) => {
  
    if(nodeEnvironment === 'development') {
       console.log("this is development error")
+      console.log(err);
       sendDevError(err, req, res);
    } else {
       let error = {...err}

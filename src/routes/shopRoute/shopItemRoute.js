@@ -11,18 +11,20 @@
 
 const express = require('express');
 const router = express.Router();
-const insertNewData = require('@controller/shopController/insertNewData.js');
+const newDataController = require('@controller/shopController/newDataController.js');
 const getShopItem = require( '@controller/shopController/getShopItem.js' );
 const updateShopItem = require('@controller/shopController/updateController.js');
 const deleteRecord = require('@controller/shopController/deleteController.js');
-
-
+const awsController = require('@controller/shopController/AWS.controller');
 
 
 router.route('/shopItem')
    .post(
-      insertNewData.uploadImage
-      )
+      newDataController.multerUpload,
+      awsController.uploadAWS,
+      newDataController.parseBody,
+      newDataController.insertNewData
+   )
 
 
    .patch(async ( req, res ) => {
