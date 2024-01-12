@@ -28,7 +28,7 @@ const sendProdError = ( err, req, res ) => {
 
 // main global error handling middleware
 module.exports = (err, req, res, next) => {
-   err.statusCode = err.status || 500;
+   err.statusCode = err.statusCode || err.status || 500;
    err.message = err.message || 'error';
 
  
