@@ -21,21 +21,21 @@ exports.uploadAWS = catchAsync(async (req, res, next) => {
    if ( validation ) {
       let bookPicture = req.files.bookPicture[0].filename;
       let thumbnail = req.files.thumbnail[0].filename;
-      bookPicture = upload(bookPicture);
-      thumbnail = upload()
+      bookPicture = await upload(bookPicture);
+      thumbnail = await upload(thumbnail);
       // bookPicture = fs.readFileSync(`${__dirname}/../../../upload/${bookPicture}`);
       // const uploadBookPicture = await s3FileUpload(bookPicture, "testUpload/shopItem");
       // thumbnail = fs.readFileSync(`${__dirname}/../../../upload/${thumbnail}`);
       // const uplaodThumbnail = await s3FileUpload(bookPicture, "testUpload/shopItem");
 
-      req.body.bookPicture = uploadBookPicture;
-      req.body.thumbnail = uplaodThumbnail;
+      req.body.bookPicture = bookPicture;
+      req.body.thumbnail = thumbnail;
+      next();
    }
 
    else {
       next(new AppError('Invalid Image Format!', 400));
    }
-
 })
 
 
