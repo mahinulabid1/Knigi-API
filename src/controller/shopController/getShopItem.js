@@ -1,5 +1,6 @@
 const shopModel = require('@model/shopModel');
-const catchAsync = require('@utils/catchAsync.js')
+const catchAsync = require('@utils/catchAsync.js');
+const AppError = require('@utils/appError');
 
 exports.all = catchAsync( async( req, res, next )=>{
    let result;
@@ -28,7 +29,8 @@ exports.all = catchAsync( async( req, res, next )=>{
 })
 
 exports.single = catchAsync( async (req, res, next) => {
-   const id = req.params.id;
+   let id;
+   req.params.id === undefined ? next(new AppError('ID is undefined!', 400)) : id = req.params.id;
    const result = await shopModel.findById(id);
 
    // result validation
