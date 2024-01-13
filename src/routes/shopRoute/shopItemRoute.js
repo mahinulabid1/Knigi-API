@@ -14,7 +14,7 @@ const router = express.Router();
 const newDataController = require('@controller/shopController/newDataController.js');
 const getShopItem = require( '@controller/shopController/getShopItem.js' );
 const updateShopItem = require('@controller/shopController/updateController.js');
-const deleteRecord = require('@controller/shopController/deleteController.js');
+const deleteController = require('@controller/shopController/deleteController.js');
 const awsController = require('@controller/shopController/AWS.controller');
 
 
@@ -25,42 +25,21 @@ router.route('/shopItem')
       newDataController.parseBody,
       newDataController.insertNewData
    )
-
-
-   .patch(async ( req, res ) => {
-      try{
-         await updateShopItem(req);
-         res.status(200).json({
-            status: 'file updated successfully!'
-         })
-      }
-      catch(err) {
-         console.log(err);
-         res.status(500).json({
-            status: 'upload operation failed. Please try again'
-         })
-      }
-   })
-
+   .patch(
+      updateShopItem.multerUpload,
+      updateShopItem.parseBody,
+      updateShopItem.update
+   )
    .get(getShopItem.all)
 
-   .delete( async ( req, res ) => {
-      try {
-         await deleteRecord(req);
-         res.status(200).json({
-            status : "Deletion Successful!"
-         })
-      }
-      
-      catch (err) {
-         res.status(200).json({
-            error : 'operation failed!',
-            message: err.message
-         });
-      }  
-   })
 
-router.get('/shopItem/:id', getShopItem.single);
+router.route('/shopItem/:id')
+   .get(getShopItem.single)
+   .delete(
+      deleteController.idValidation,
+      deleteController.deleteRecord
+   )
+
 
 module.exports = router;
 
