@@ -11,7 +11,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require ('cookie-parser');
 
 const errorHandler = require("./src/controller/errorController");
-const ShopRouter = require('./src/routes/shopRoute/shopItemRoute');
+const ShopRouter = require('./src/routes/shopItemRoute');
 
 // app.enable('trust proxy');
 
