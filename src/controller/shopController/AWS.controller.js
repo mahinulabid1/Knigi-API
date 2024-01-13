@@ -19,15 +19,8 @@ exports.uploadAWS = catchAsync(async (req, res, next) => {
    const validation = mimeTypeCheck([req.files.bookPicture[0].mimetype, req.files.thumbnail[0].mimetype]);
 
    if ( validation ) {
-      let bookPicture = req.files.bookPicture[0].filename;
-      let thumbnail = req.files.thumbnail[0].filename;
-      bookPicture = await upload(bookPicture);
-      thumbnail = await upload(thumbnail);
-      // bookPicture = fs.readFileSync(`${__dirname}/../../../upload/${bookPicture}`);
-      // const uploadBookPicture = await s3FileUpload(bookPicture, "testUpload/shopItem");
-      // thumbnail = fs.readFileSync(`${__dirname}/../../../upload/${thumbnail}`);
-      // const uplaodThumbnail = await s3FileUpload(bookPicture, "testUpload/shopItem");
-
+      bookPicture = await upload(req.files.bookPicture[0].filename);
+      thumbnail = await upload(req.files.thumbnail[0].filename);
       req.body.bookPicture = bookPicture;
       req.body.thumbnail = thumbnail;
       next();
