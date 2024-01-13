@@ -1,21 +1,20 @@
 const shopModel = require('@model/shopModel');
+const catchAsync =  require('@utils/catchAsync');
+const AppError = require('@utils/appError');
 
-module.exports = async ( req ) => {
-   
-
-   try {
-      const id = req.query.id;
-      await shopModel.findOneAndDelete( { _id: id } );
-      return 'Operation successful'
-   }
-   catch (err) {  
-      const message = err.message;
-      const errTypeOne = message.includes('Cast to ObjectId failed');
-      if(errTypeOne === true) {
-         throw new Error('Id not found!')
-      }
-      else {
-         throw new Error(err); 
-      }
-   } 
+exports.idValidation = async ( req, res, next ) => {
+   let id;
+   req.params.id === undefined ? next(new AppError('ID is not defined', 400)) : id = req.params.id ;
+   const result = await shopModel.findById(id, '_id');
+   result === null || undefined ? next(new AppError('This ID is not a valid ID', 404)) : next();
 }
+
+exports.deleteRecord =catchAsync( async ( req, res, next ) => {
+   const id = req.params.id;
+   await shopModel.findOneAndDelete( { _id: id } );
+   res.status(200).json({
+      status : 200,
+      id : id,
+      message : "Record Deletion Successful"
+   })
+})
