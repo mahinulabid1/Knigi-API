@@ -5,7 +5,7 @@
 */
 const mimeTypeCheck = (mimeTypeArr) => {
   for(let i = 0 ; i < mimeTypeArr.length; i++ ) {
-    let valid = mimeTypeArr[i].includes('image')
+    let valid = mimeTypeArr[i].startsWith('image')
     if(valid === false) {
       return false;
     }
