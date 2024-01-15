@@ -12,6 +12,7 @@ const cookieParser = require ('cookie-parser');
 
 const errorHandler = require("./src/controller/errorController");
 const ShopRouter = require('./src/routes/shopItemRoute');
+const UserRouter = require('./src/routes/userRoute')
 
 // app.enable('trust proxy');
 
@@ -34,6 +35,7 @@ app.use(hpp());
 
 // Routes
 app.use('/api/v1', ShopRouter);
+app.use('/api/v1', UserRouter)
 
 
 // GLOBAL ERROR HANDLING MIDDLEWARE
