@@ -1,81 +1,63 @@
 const mongoose = require("mongoose");
 
-// const UserSchema = new mongoose.Schema(
-//     {
-//         firstName: {
-//             type : String,
-//             required: true
-//         },
+const UserSchema = new mongoose.Schema({
+   firstName: {
+      type: String,
+      required: [true, 'First name is not found in the user data!']
+   },
 
-//         lastName : {
-//             type: String,
-//             required: true
-//         },
+   lastName: {
+      type: String,
+      required: [true, 'Last name is not found in the user data!']
+   },
 
-//         email : {
-//             type : String,
-//             required : true
-//         },
+   email: {
+      type: String,
+      unique: true,
+      required: [true, 'Email is not found in the user data!'] 
+   },
 
-//         birthDate: {
-//             day : {
-//                 type: Number,
-//                 required: true
-//             },
-//             month : {
-//                 type : Number,
-//                 required: true
-//             },
-//             year : {
-//                 type: Number,
-//                 required : true
-//             }
-//         },
+   birthdate: {
+      type: Date,
+      required: [true, 'Birthdate is not found in the user data!']  
+   },
 
-//         userName : {
-//             type: String,
-//             unique: true,
-//             required: true
-//         },
+   username: {
+      type: String,
+      required: [true, 'Username is not found in the user data!'],
+      unique: true // this unique not working. According to some web forum, this could be an issue of mongoose itself. It existed in older version.
+   },
 
-//         gender : {
-//             type: String,
-//             required: true
-//         },
+   gender: {
+      type: String,
+      enum: ['male', 'female', 'other'],
+      required: [true, 'Gender is not found in the user data!']
+   },
 
-//         password : {
-//             type : String,
-//             required : true
-//         }
-//     },
+   password: {
+      type: String,
+      required: [true, 'Password is not found in the user data!']
+   },
+   imageData : {
+      imageName: {
+         type: String,
+         default: "no Image Uploaded",
+      },
+      awsImagePath: {  // Corrected field name
+         type: String,
+         default: "no Image Uploaded",
+      },
+      imageLink: {
+         type: String,
+         default: "image link not specified!"
+      }
+   }
+},
 
-//     {
-//         collection : 'userDB' // Collection name
-//     }
-// );
+{
+   collection: 'userDB' // Collection name
+});
 
-const UserSchema = new mongoose.Schema(
-    {
-        fullName : {
-            type :String,
-            required : [true, 'fullName is missing. Operation Aborted']
-        },
-        userName : {
-            type : String,
-            required : [true, "username is required creating new user. Operation is aborted"],
-            // unique: true  // will be creating custom validator 
-        },
-        password : {
-            type : String,
-            required : [true, "password is required creating new user"],
-        }
-    },
-    {
-        collection: "userDB"
-    }
+const UserModel = mongoose.model("userModel", UserSchema);
 
-)
-
-const userModel = new mongoose.model("userModel", UserSchema);
-
-module.exports = userModel;
+module.exports = UserModel;
