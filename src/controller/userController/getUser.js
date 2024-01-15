@@ -17,3 +17,18 @@ exports.allUser = catchAsync(async ( req, res, next) => {
       })
    }
 })
+
+exports.single = catchAsync(async (req, res, next)=> {
+   let id;
+   if(req.params.id) {
+      id = req.params.id
+   }else {
+      return next(new AppError('Id is undefined!', 400));
+   }
+
+   const data = await userModel.findById(id);
+   res.status(200).json({
+      status: 'success',
+      data : data
+   })
+})

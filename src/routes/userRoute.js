@@ -4,6 +4,7 @@ const router = express.Router();
 const createNewUser = require('@controller/userController/createNewUser');
 const AWSController = require('@controller/userController/AWS.controller');
 const getUser = require('@controller/userController/getUser');
+const updateController = require('@controller/userController/updateController')
 
 router.post(
    '/newUser', 
@@ -11,7 +12,13 @@ router.post(
    createNewUser.create
 );
 
+router.patch(
+   '/user/:id', 
+   updateController.update
+)
+
 router.get('/allUser', getUser.allUser)
+router.get('/user/:id', getUser.single);
 
 // checks if the user name is valid or not
 router.get('/validateUser/:username', createNewUser.validateUsername)
