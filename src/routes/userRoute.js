@@ -6,10 +6,12 @@ const AWSController = require('@controller/userController/AWS.controller');
 const getUser = require('@controller/userController/getUser');
 const updateController = require('@controller/userController/updateController');
 const deleteController = require('@controller/userController/deleteController');
+const authController = require('@controller/userController/authController')
 
 router.post(
    '/newUser', 
    createNewUser.validateUsername,
+   authController.passwordEncrypt,
    createNewUser.create
 );
 
@@ -30,6 +32,7 @@ router.get('/user/:id', getUser.single);
 // checks if the user name is valid or not
 router.get('/validateUser/:username', createNewUser.validateUsername)
 
+// upload user image
 router.post(
    '/userImage/:id', 
    createNewUser.multerUpload,
@@ -37,4 +40,14 @@ router.post(
    createNewUser.uploadPicture
 )
 
+router.post(
+   '/login', 
+   authController.loginVerify
+)
+
+
+router.post(
+   '/test',
+   authController.passwordEncrypt
+)
 module.exports = router;
