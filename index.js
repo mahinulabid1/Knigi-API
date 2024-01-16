@@ -14,13 +14,14 @@ const errorHandler = require("./src/controller/errorController");
 const ShopRouter = require('./src/routes/shopItemRoute');
 const UserRouter = require('./src/routes/userRoute')
 
-// app.enable('trust proxy');
 
 const limiter = rateLimit({
    max: 100,
    windowMs: 60 * 60 * 1000,
    message: 'Too many requests from this IP, please try again in an hour!'
 })
+
+// app.enable('trust proxy');
 app.use('/api', limiter);
 app.use(morgan('dev'));
 app.use(helmet());
@@ -32,15 +33,13 @@ app.use(mongoSanitize()); // parse body before these three, parse data before se
 app.use(xss());
 app.use(hpp());
 
-
 // Routes
 app.use('/api/v1', ShopRouter);
 app.use('/api/v1', UserRouter)
 
 
 // GLOBAL ERROR HANDLING MIDDLEWARE
-app.use(errorHandler);
-
+app.use(errorHandler);  
 
 module.exports = { app };
 
