@@ -1,5 +1,6 @@
 const catchAsync = require('@utils/catchAsync');
 const userModel = require('@model/userModel');
+const AppError = require('@utils/appError')
 
 exports.allUser = catchAsync(async ( req, res, next) => {
    const result = await userModel.find({});
@@ -19,14 +20,9 @@ exports.allUser = catchAsync(async ( req, res, next) => {
 })
 
 exports.single = catchAsync(async (req, res, next)=> {
-   let id;
-   if(req.params.id) {
-      id = req.params.id
-   }else {
-      return next(new AppError('Id is undefined!', 400));
-   }
+   const username = req.tokenInfo;
 
-   const data = await userModel.findById(id);
+   const data = await userModel.findOne({username : username});
    res.status(200).json({
       status: 'success',
       data : data

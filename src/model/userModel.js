@@ -50,6 +50,9 @@ const UserSchema = new mongoose.Schema({
       imageLink: {
          type: String,
          default: "image link not specified!"
+      },
+      userRole : {
+         type: String
       }
    }
 },

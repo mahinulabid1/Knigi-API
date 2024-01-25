@@ -27,7 +27,11 @@ router.delete(
 )
 
 router.get('/allUser', getUser.allUser)
-router.get('/user/:id', getUser.single);
+router.get(
+   '/user', 
+   authController.decodeJWT,
+   getUser.single
+);
 
 // checks if the user name is valid or not
 router.get('/validateUser/:username', createNewUser.validateUsername)
