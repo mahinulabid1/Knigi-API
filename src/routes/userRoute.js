@@ -17,7 +17,7 @@ router.post(
 
 router.patch(
    '/user/:id', 
-   updateController.update
+   updateController.updateData
 )
 
 router.delete(
@@ -44,12 +44,21 @@ router.post(
    createNewUser.uploadPicture
 )
 
+router.patch(
+   '/userImage/:id',
+   updateController.dBImageValidation,
+   updateController.multerUpload,
+   updateController.uploadImageToAWS
+   
+)
+
 router.post(
    '/login', 
    authController.loginVerify
 )
 
-
+//==============================================================
+//DEV MODE
 router.post(
    '/test',
    authController.passwordEncrypt
