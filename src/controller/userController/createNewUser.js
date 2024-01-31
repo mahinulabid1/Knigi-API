@@ -58,7 +58,7 @@ exports.uploadPicture = catchAsync( async( req, res, next ) => {
 
    let imageData = req.body.uploadedImageInformaiton; // handled by multer uploader
    console.log(imageData)
-   processedData = {
+   const processedData = {
       imageName: `${imageData.public_id}.jpg`,
       imageLink: imageData.secure_url,
       publicId: imageData.public_id

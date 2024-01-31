@@ -3,9 +3,6 @@ const catchAsync = require('@utils/catchAsync');
 const generateUniqueKey = require('@utils/generateUniqueKey')
 const fs = require('fs');
 const sharp = require('sharp')
-const multer = require('multer');
-
-
 
 
 const cloudUpload = async (imagePath) => {
@@ -19,13 +16,11 @@ const cloudUpload = async (imagePath) => {
 
    // Upload the image
    const result = await cloudinary.uploader.upload(imagePath, options);
-   console.log(result);
-   // return result.public_id;
    return result;
 };
 
 
-exports.deleteImage = (publicId) => {
+const deleteImage = async (publicId) => {
    cloudinary.uploader.destroy(publicId).then(
       () => {
          console.log('file successfully deleted');
@@ -69,5 +64,12 @@ exports.uploadFile = catchAsync(async (req, res, next) => {
    const uplaodedFileInfo = await cloudUpload(compressedFileInfo.path);
    // deleteCompressedImageFile(compressedFileInfo.imageName);
    req.body.uploadedImageInformaiton = uplaodedFileInfo;
+   next();
+})
+
+// middleware
+exports.deleteOldUserImage = catchAsync( async (req, res, next) =>{
+   const publicId = req.imagePublicId // processed by middleware
+   await deleteImage(publicId);
    next();
 })

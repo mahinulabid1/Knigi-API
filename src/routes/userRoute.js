@@ -18,7 +18,7 @@ router.post(
 
 router.patch(
    '/user/:id', 
-   updateController.updateData
+   updateController.updateMongoDbData
 )
 
 router.delete(
@@ -49,10 +49,11 @@ router.post(
 
 router.patch(
    '/userImage/:id',
-   updateController.dBImageValidation,
+   updateController.fetchPreviousUserImage,
    updateController.multerUpload,
-   updateController.uploadImageToAWS
-   
+   cloudinaryController.uploadFile,
+   cloudinaryController.deleteOldUserImage,
+   updateController.updateImageDataInMongoDb
 )
 
 router.post(
