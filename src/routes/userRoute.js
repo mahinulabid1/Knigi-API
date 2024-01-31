@@ -64,12 +64,14 @@ router.post(
 
 //==============================================================
 //DEV MODE
+
+
 router.post(
    '/test',
    // authController.passwordEncrypt
-   createNewUser.multerUpload,
+   updateController.multerUpload,
    // createNewUser.testUpload,
-   cloudinaryController.uploadFile
+   updateController.test
 )
 
 router.delete(

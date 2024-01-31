@@ -5,10 +5,16 @@ const catchAsync = require('@utils/catchAsync');
 const AppError = require('@utils/appError');
 const cloudinaryController = require('../../cloudinaryStorage//controller');
 
-const upload = multer({
-   dest: 'upload/',
+// const upload = multer({
+//    dest: 'upload/',
+//    limits: { fileSize: 1000 * 2000 }, // 2MB
+// });
+const storage = multer.memoryStorage()
+const upload = multer({ 
+   storage: storage ,
    limits: { fileSize: 1000 * 2000 }, // 2MB
-});
+})
+
 
 exports.multerUpload = upload.single('userImage');
 
