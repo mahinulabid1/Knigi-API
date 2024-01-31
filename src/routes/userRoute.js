@@ -17,7 +17,9 @@ router.post(
 );
 
 router.patch(
-   '/user/:id', 
+   '/user', 
+   authController.decodeJWT,
+   updateController.checkIfUserExistInDb,
    updateController.updateMongoDbData
 )
 
@@ -48,7 +50,9 @@ router.post(
 )
 
 router.patch(
-   '/userImage/:id',
+   '/userImage',
+   authController.decodeJWT,
+   updateController.checkIfUserExistInDb,
    updateController.fetchPreviousUserImage,
    updateController.multerUpload,
    cloudinaryController.uploadFile,
