@@ -1,0 +1,8 @@
+{
+   "to_do" : {
+      "reverse upload":{
+         "brief" : "if there is any error after upload is completed, delete the uploaded file",
+         "challange" : " due to higher order function, It is hard to identify that the error is coming from the upload operation"
+      }
+   }
+}
