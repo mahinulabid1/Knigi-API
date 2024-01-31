@@ -53,7 +53,8 @@ const UserSchema = new mongoose.Schema({
       },
       publicId : {
          type: String,
-         required: [true, 'public ID is needded for an image!']
+         // required: [true, 'public ID is needded for an image!']
+         default: 'publicId is not defined!'
       }
       
    },
