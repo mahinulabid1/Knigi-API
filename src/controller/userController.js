@@ -1,6 +1,8 @@
 // this is where I'll do database operation
 const userModel = require("../model/userModel");
 const { bcrypt, dotenv } = require('@index');
+const { cloudinary } = require('../cloudinaryStorage/storage.config');
+
 const {
    //  generateUniqueKey, 
    app,

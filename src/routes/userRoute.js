@@ -7,6 +7,7 @@ const getUser = require('@controller/userController/getUser');
 const updateController = require('@controller/userController/updateController');
 const deleteController = require('@controller/userController/deleteController');
 const authController = require('@controller/userController/authController')
+const cloudinaryController = require('@cloudinary/controller')
 
 router.post(
    '/newUser', 
@@ -40,7 +41,9 @@ router.get('/validateUser/:username', createNewUser.validateUsername)
 router.post(
    '/userImage/:id', 
    createNewUser.multerUpload,
-   AWSController.uploadAWS,
+   // AWSController.uploadAWS,
+   // createNewUser.uploadPicture
+   cloudinaryController.uploadFile,
    createNewUser.uploadPicture
 )
 
@@ -57,10 +60,19 @@ router.post(
    authController.loginVerify
 )
 
+
 //==============================================================
 //DEV MODE
 router.post(
    '/test',
-   authController.passwordEncrypt
+   // authController.passwordEncrypt
+   createNewUser.multerUpload,
+   // createNewUser.testUpload,
+   cloudinaryController.uploadFile
+)
+
+router.delete(
+   '/test',
+   createNewUser.deleteImage
 )
 module.exports = router;
