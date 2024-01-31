@@ -2,10 +2,16 @@ const catchAsync = require('@utils/catchAsync');
 const userModel = require('@model/userModel');
 const multer = require('multer');
 
-const upload = multer({
-   dest: 'upload/',
+// const upload = multer({
+//    dest: 'upload/',
+//    limits: { fileSize: 1000 * 2000 }, // 2MB
+// });
+
+const storage = multer.memoryStorage()
+const upload = multer({ 
+   storage: storage ,
    limits: { fileSize: 1000 * 2000 }, // 2MB
-});
+})
 
 exports.multerUpload = upload.single('userImage');
 
@@ -73,4 +79,9 @@ exports.updateImageDataInMongoDb = catchAsync(async (req, res, next) => {
       message: 'update complete!',
       data: processedData
    })
+})
+
+exports.test = catchAsync(async (req, res, next) => {
+   console.log(req.file);
+   res.send(req.file);
 })

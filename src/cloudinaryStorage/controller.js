@@ -23,7 +23,7 @@ const cloudUpload = async (imagePath) => {
 const deleteImage = async (publicId) => {
    cloudinary.uploader.destroy(publicId).then(
       () => {
-         console.log('file successfully deleted');
+         console.log('Cloudinary Update: file successfully deleted!');
       }
    );
 }
@@ -33,7 +33,7 @@ const compressImageFile = async (req) => {
    const uniqueKey = generateUniqueKey();
    const filePath = `${__dirname}/../../upload/${req.file.filename}`;
 
-   await sharp(filePath)
+   await sharp(req.file.buffer)
       .jpeg({ quality: 60 })
       .toFile(`${__dirname}/../../upload/${uniqueKey}.jpg`)
       .then(() => {
@@ -46,29 +46,31 @@ const compressImageFile = async (req) => {
    }
 }
 
-const deleteMulterTempUpload = (req) => {
-   const filePath = `${__dirname}/../../upload/${req.file.filename}`;
-   fs.unlinkSync(filePath);
-}
 
 const deleteCompressedImageFile = (imageName) => {
    const filePath = `${__dirname}/../../upload/${imageName}`;
-   fs.unlinkSync(filePath);
+   fs.unlink(filePath,
+      (err => {
+         if (err) console.log(err);
+         else {
+            console.log("\nDeleted file");
+         }
+      })
+   );
 }
 
 
 // this is a middleware
 exports.uploadFile = catchAsync(async (req, res, next) => {
    const compressedFileInfo = await compressImageFile(req);
-   // deleteMulterTempUpload(req);
    const uplaodedFileInfo = await cloudUpload(compressedFileInfo.path);
-   // deleteCompressedImageFile(compressedFileInfo.imageName);
+   deleteCompressedImageFile(compressedFileInfo.imageName);
    req.body.uploadedImageInformaiton = uplaodedFileInfo;
    next();
 })
 
 // middleware
-exports.deleteOldUserImage = catchAsync( async (req, res, next) =>{
+exports.deleteOldUserImage = catchAsync(async (req, res, next) => {
    const publicId = req.imagePublicId // processed by middleware
    await deleteImage(publicId);
    next();
