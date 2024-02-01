@@ -28,4 +28,11 @@ const Schema = new mongoose.Schema({
    articleEditDate : {
       type : Object
    }
-})
+},
+{
+   collection: 'BlogDB'
+}
+)
+
+const BlogModel = new mongoose.model('blogmodel', Schema);
+module.exports = BlogModel;
