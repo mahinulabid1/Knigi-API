@@ -5,7 +5,7 @@ const fs = require('fs');
 const sharp = require('sharp')
 
 
-const cloudUpload = async (imagePath) => {
+const performCloudUpload = async (imagePath) => {
    // Use the uploaded file's name as the asset's public ID and 
    // allow overwriting the asset with new versions
    const options = {
@@ -29,15 +29,15 @@ const deleteImage = async (publicId) => {
 }
 
 
-const compressImageFile = async (req) => {
+const compressImageFile = async (fileBuffer) => {
    const uniqueKey = generateUniqueKey();
-   const filePath = `${__dirname}/../../upload/${req.file.filename}`;
+   // const filePath = `${__dirname}/../../upload/${req.file.filename}`;
 
-   await sharp(req.file.buffer)
+   await sharp(fileBuffer)
       .jpeg({ quality: 60 })
       .toFile(`${__dirname}/../../upload/${uniqueKey}.jpg`)
       .then(() => {
-         console.log(`Compressed ${req.file.filename} successfully`);
+         console.log(`Compressed file successfully!`);
       });
 
    return {
@@ -59,13 +59,17 @@ const deleteCompressedImageFile = (imageName) => {
    );
 }
 
+const uploadAndDeleteTempFile = async (fileBuffer) => {
+   const compressedFileInfo = await compressImageFile(fileBuffer);
+   const uplaodedFileInfo = await performCloudUpload(compressedFileInfo.path);
+   deleteCompressedImageFile(compressedFileInfo.imageName);
+   return uplaodedFileInfo;
+}
 
 // this is a middleware
 exports.uploadFile = catchAsync(async (req, res, next) => {
-   const compressedFileInfo = await compressImageFile(req);
-   const uplaodedFileInfo = await cloudUpload(compressedFileInfo.path);
-   deleteCompressedImageFile(compressedFileInfo.imageName);
-   req.body.uploadedImageInformaiton = uplaodedFileInfo;
+   const uploadedFileData = await uploadAndDeleteTempFile(req.file.buffer);
+   req.body.uploadedImageInformaiton = uploadedFileData;
    next();
 })
 
@@ -73,5 +77,23 @@ exports.uploadFile = catchAsync(async (req, res, next) => {
 exports.deleteOldUserImage = catchAsync(async (req, res, next) => {
    const publicId = req.imagePublicId // processed by middleware
    await deleteImage(publicId);
+   next();
+})
+
+
+exports.uploadMultipleFile = catchAsync(async (req, res, next) => {
+   const arrayOfFiles = req.files;
+   req.uploadedFilesArray = [];
+   for(let i = 0; i < arrayOfFiles.length; i++ ) {
+      let buffer = arrayOfFiles[i].buffer;
+      let uploadedFileData = await uploadAndDeleteTempFile(buffer);
+      let data = {
+         imageName : `${uploadedFileData.public_id}.jpg`,
+         publicId : uploadedFileData.public_id,
+         imageLink : uploadedFileData.secure_url
+      }
+      req.uploadedFilesArray.push(data);
+      console.log(req.uploadedFilesArray);
+   }
    next();
 })
