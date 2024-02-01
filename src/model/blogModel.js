@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const Schema = new mongoose.Schema({
    author : {
       type: String,
-      required: [true, 'Author is missing!']
+      required: [true, 'Author is missing!']  // fixed data, won't take input from client, if client tries to change it-- send error
    },
    subject : {
       type: String,
@@ -22,11 +22,11 @@ const Schema = new mongoose.Schema({
       required : [true, 'article image collection is missing!']
    },
    articlePublishedDate : {
-      type : Date,
-      required : [true, 'article date is mising']
+      type : String,
+      required : [true, 'article date is mising'] // fixed data, won't take input from client, if client tries to change it-- send error
    },
    articleEditDate : {
-      type : Object
+      type : Object  // fixed data, won't take input from client, if client tries to change it-- send error
    }
 },
 {
