@@ -13,6 +13,7 @@ const cookieParser = require ('cookie-parser');
 const errorHandler = require("./src/controller/errorController");
 const ShopRouter = require('./src/routes/shopItemRoute');
 const UserRouter = require('./src/routes/userRoute')
+const BlogRouter = require('./src/routes/blogRoute')
 
 
 const limiter = rateLimit({
@@ -35,7 +36,8 @@ app.use(hpp());
 
 // Routes
 app.use('/api/v1', ShopRouter);
-app.use('/api/v1', UserRouter)
+app.use('/api/v1', UserRouter);
+app.use('/api/v1', BlogRouter);
 
 
 // GLOBAL ERROR HANDLING MIDDLEWARE
