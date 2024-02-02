@@ -66,6 +66,8 @@ const uploadAndDeleteTempFile = async (fileBuffer) => {
    return uplaodedFileInfo;
 }
 
+
+
 // this is a middleware
 exports.uploadFile = catchAsync(async (req, res, next) => {
    const uploadedFileData = await uploadAndDeleteTempFile(req.file.buffer);
@@ -77,6 +79,16 @@ exports.uploadFile = catchAsync(async (req, res, next) => {
 exports.deleteOldUserImage = catchAsync(async (req, res, next) => {
    const publicId = req.imagePublicId // processed by middleware
    await deleteImage(publicId);
+   next();
+})
+
+exports.deleteMultipleImage = catchAsync( async (req, res, next) => {
+   const imagePublicIdArray = req.imageIdArr; 
+   // receives array just containing publicId in each index
+   for(let i = 0; i< imagePublicIdArray.length; i++) {
+      await deleteImage(imagePublicIdArray[i]);
+      console.log(`Deleted image with Public id : ${imagePublicIdArray[i]}`);
+   }
    next();
 })
 
