@@ -15,10 +15,22 @@ exports.checkUserRole = catchAsync(async (req, res, next) => {
    next();
 })
 
-
 exports.protectBadInputRequest = catchAsync (async (req, res, next) => {
    if(req.body.author || req.body.articlePublishedDate || req.body.articleEditDate) {
       return next(new AppError('Author, Article Publish Date and Article Edit Date inputs are not accepted! 😔'))
    }
+   next();
+})
+
+const authenticateJWT = async (req) => {
+   const bearerHeader = req.headers['authorization'];
+   const token = bearerHeader.split(' ')[1];
+   return jwt.verify(token, process.env.TOKEN_SECRET);
+}
+
+exports.decodeJWT = catchAsync(async (req, res, next) => {
+   const decodedInformation = await authenticateJWT(req);
+   console.log(decodedInformation)
+   req.tokenInfo = decodedInformation.username;
    next();
 })
