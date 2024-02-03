@@ -32,6 +32,10 @@ const InsertShopItemSchema = new mongoose.Schema(
             imageName: {
                type: String,
                required : [true, 'productImage-imageName is not defined']
+            },
+            publicId : {
+               type: String,
+               required: [true, 'Public Id is missing!']
             }
          },
          thumbnail: {
@@ -42,6 +46,10 @@ const InsertShopItemSchema = new mongoose.Schema(
             imageName: {
                type : String,
                required : [true, 'thumbnail-imageName is not defined']
+            },
+            publicId : {
+               type: String,
+               required: [true, 'Public Id is missing!']
             }
          }
       }

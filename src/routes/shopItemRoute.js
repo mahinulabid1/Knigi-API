@@ -12,31 +12,42 @@
 const express = require('express');
 const router = express.Router();
 const newDataController = require('@controller/shopController/newDataController.js');
-const getShopItem = require( '@controller/shopController/getShopItem.js' );
+const getShopItem = require('@controller/shopController/getShopItem.js');
 const updateShopItem = require('@controller/shopController/updateController.js');
 const deleteController = require('@controller/shopController/deleteController.js');
-const awsController = require('@controller/shopController/AWS.controller');
+const cloudinaryController = require('@cloudinary/controller')
 
 router.route('/shopItem')
    .post(
       newDataController.multerUpload,
-      awsController.uploadAWS,
+      cloudinaryController.uploadShopItemFiles,
       newDataController.parseBody,
-      newDataController.insertNewData
-   )
-   .patch(
-      updateShopItem.multerUpload,
-      updateShopItem.parseBody,
-      updateShopItem.update
+      newDataController.uploadDataToMongoDb
    )
    .get(getShopItem.all)
+
+router.patch(
+   '/shopItem/id/:idValue',
+   // updateShopItem.multerUpload,
+   // cloudinaryController.uploadShopItemFiles, // update files feature will be in later version
+   updateShopItem.parseBody,
+   updateShopItem.update
+)
 
 router.route('/shopItem/:id')
    .get(getShopItem.single)
    .delete(
-      deleteController.idValidation,
+      deleteController.fetchDataFromDb,
+      deleteController.isDataValid,
+      cloudinaryController.deleteMultipleImage,
       deleteController.deleteRecord
    )
+
+router.post(
+   '/test',
+   newDataController.multerUpload,
+   newDataController.test
+)
 
 
 module.exports = router;
