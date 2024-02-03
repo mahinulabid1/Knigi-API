@@ -21,6 +21,10 @@ const performCloudUpload = async (imagePath) => {
 
 
 const deleteImage = async (publicId) => {
+   if(!publicId) {
+      console.log('Cannot delete image File of Public_id: undefined');
+      return;
+   }
    cloudinary.uploader.destroy(publicId).then(
       () => {
          console.log('Cloudinary Update: file successfully deleted!');
@@ -31,7 +35,6 @@ const deleteImage = async (publicId) => {
 
 const compressImageFile = async (fileBuffer) => {
    const uniqueKey = generateUniqueKey();
-   // const filePath = `${__dirname}/../../upload/${req.file.filename}`;
 
    await sharp(fileBuffer)
       .jpeg({ quality: 60 })
@@ -82,12 +85,14 @@ exports.deleteOldUserImage = catchAsync(async (req, res, next) => {
    next();
 })
 
-exports.deleteMultipleImage = catchAsync( async (req, res, next) => {
-   const imagePublicIdArray = req.imageIdArr; 
+exports.deleteMultipleImage = catchAsync(async (req, res, next) => {
+   if(!req.imageIdArr) return next(); // for older data: if you don't find image public id go to next
+   const imagePublicIdArray = req.imageIdArr;
+   
    // receives array just containing publicId in each index
-   for(let i = 0; i< imagePublicIdArray.length; i++) {
+   for (let i = 0; i < imagePublicIdArray.length; i++) {
       await deleteImage(imagePublicIdArray[i]);
-      console.log(`Deleted image with Public id : ${imagePublicIdArray[i]}`);
+      if(imagePublicIdArray[i]) console.log(`Deleted image with Public id : ${imagePublicIdArray[i]}`); // if :dont console if image id is undefined
    }
    next();
 })
@@ -96,16 +101,44 @@ exports.deleteMultipleImage = catchAsync( async (req, res, next) => {
 exports.uploadMultipleFile = catchAsync(async (req, res, next) => {
    const arrayOfFiles = req.files;
    req.uploadedFilesArray = [];
-   for(let i = 0; i < arrayOfFiles.length; i++ ) {
+   for (let i = 0; i < arrayOfFiles.length; i++) {
       let buffer = arrayOfFiles[i].buffer;
       let uploadedFileData = await uploadAndDeleteTempFile(buffer);
       let data = {
-         imageName : `${uploadedFileData.public_id}.jpg`,
-         publicId : uploadedFileData.public_id,
-         imageLink : uploadedFileData.secure_url
+         imageName: `${uploadedFileData.public_id}.jpg`,
+         publicId: uploadedFileData.public_id,
+         imageLink: uploadedFileData.secure_url
       }
       req.uploadedFilesArray.push(data);
-      console.log(req.uploadedFilesArray);
    }
+   next();
+})
+
+// better to approach simple, though its not reuseable
+exports.uploadShopItemFiles = catchAsync(async (req, res, next) => {
+   const bookPictureBuffer = req.files.bookPicture[0].buffer;
+   const thumbnailBuffer = req.files.thumbnail[0].buffer;
+
+   if(!bookPictureBuffer  && !thumbnailBuffer) {
+      return next();
+   }
+
+   const uploadedBookPictureInfo = await uploadAndDeleteTempFile(bookPictureBuffer);
+   const uploadedThumbnailInfo = await uploadAndDeleteTempFile(thumbnailBuffer);
+
+   let data = {
+      productImage: {
+         url: uploadedBookPictureInfo.secure_url,
+         imageName: `${uploadedBookPictureInfo.public_id}.jpg`,
+         publicId: uploadedBookPictureInfo.public_id
+      },
+      thumbnail: {
+         url: uploadedThumbnailInfo.secure_url,
+         imageName: `${uploadedThumbnailInfo.public_id}.jpg`,
+         publicId: uploadedThumbnailInfo.public_id
+      }
+   }
+   req.uploadedFilesInfo = data;
+
    next();
 })
