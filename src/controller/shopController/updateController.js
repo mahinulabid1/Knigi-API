@@ -6,7 +6,8 @@ const upload = multer({
    dest: 'upload/'
 })
 
-exports.multerUpload = upload.none();
+//can't update image in this version
+// exports.multerUpload = upload.none();
 
 exports.parseBody = catchAsync(async(req, res, next) => {
    const parsedData = {
@@ -22,16 +23,19 @@ exports.parseBody = catchAsync(async(req, res, next) => {
       productSpecs: req.body.productSpecs,
    }
 
+
+
    req.body = parsedData;
    next();
 })
 
 exports.update = catchAsync( async (req, res, next) => {
    let id;
-   req.query.id === undefined ? next(new AppError('id is undefined!', 400)) : id = req.query.id;
+   req.params.idValue === undefined ? next(new AppError('id is undefined!', 400)) : id = req.params.idValue;
    const data = req.body;
    await shopModel.findByIdAndUpdate(id, data );  
    res.status(200).json({
-      status: 'Update Successful!'
+      status: 'Update Successful!',
+      data: data
    })
 })
