@@ -40,10 +40,10 @@ app.use('/api/v1', UserRouter);
 app.use('/api/v1', BlogRouter);
 
 
-app.use('*', ( req, res, next) =>{
+app.use('*', ( req, res) =>{
    res.status(404).json({
       status: "404 Not Found!",
-      message: "No Resources found in this route!"
+      message: "No Resources found with this route!"
    })
 })
 
