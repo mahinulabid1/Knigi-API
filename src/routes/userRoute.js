@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 
 const createNewUser = require('@controller/userController/createNewUser');
-const AWSController = require('@controller/userController/AWS.controller');
 const getUser = require('@controller/userController/getUser');
 const updateController = require('@controller/userController/updateController');
 const deleteController = require('@controller/userController/deleteController');

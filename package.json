@@ -35,7 +35,7 @@
     "@root": ".",
     "@controller": "src/controller",
     "@awsS3": "src/AWS_S3",
-    "@index": "./index.js",
+    "@app": "./app.js",
     "@additionalFunction": "additionalFunction",
     "@multer.config": "additionalFunction/multer.config.js",
     "@upload": "upload",

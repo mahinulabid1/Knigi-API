@@ -2,7 +2,7 @@ const moduleAlias = require('module-alias/register')
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 dotenv.config({ path: './config.env' });
-const { app } = require('@index');
+const { app } = require('@app');
 
 
 const nonProcessedURL = process.env.MONGODB_CONNECT_URL;

@@ -2,7 +2,6 @@
 - insert the parsed data in mongoDB
 */
 const catchAsync = require('@utils/catchAsync');
-const { s3FileDelete } = require('@awsS3/s3.deleteController.js');
 const ShopModel = require('@model/shopModel');
 const multer = require('multer');
 const AppError = require('@utils/appError');
