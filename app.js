@@ -40,8 +40,16 @@ app.use('/api/v1', UserRouter);
 app.use('/api/v1', BlogRouter);
 
 
+app.use('*', ( req, res, next) =>{
+   res.status(404).json({
+      status: "404 Not Found!",
+      message: "No Resources found in this route!"
+   })
+})
+
 // GLOBAL ERROR HANDLING MIDDLEWARE
 app.use(errorHandler);  
+
 
 module.exports = { app };
 
