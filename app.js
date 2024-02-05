@@ -22,6 +22,15 @@ const limiter = rateLimit({
    message: 'Too many requests from this IP, please try again in an hour!'
 })
 
+// a custom function to rollback(delete uploaded photo) photo when there is an error when uploading
+const uploadRollBackConfig = (req, res, next) => {
+   req.isFileUploaded = {
+      status: false,
+      publicIdArr : []
+   }
+   next();
+}
+
 // app.enable('trust proxy');
 app.use('/api', limiter);
 app.use(morgan('dev'));
@@ -33,6 +42,7 @@ app.use(cookieParser());
 app.use(mongoSanitize()); // parse body before these three, parse data before security
 app.use(xss());
 app.use(hpp());
+app.use(uploadRollBackConfig);
 
 // Routes
 app.use('/api/v1', ShopRouter);

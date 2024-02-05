@@ -20,7 +20,7 @@ const performCloudUpload = async (imagePath) => {
 };
 
 
-const deleteImage = async (publicId) => {
+exports.deleteImage = async (publicId) => {
    if(!publicId) {
       console.log('Cannot delete image File of Public_id: undefined');
       return;
@@ -56,7 +56,7 @@ const deleteCompressedImageFile = (imageName) => {
       (err => {
          if (err) console.log(err);
          else {
-            console.log("\nDeleted file");
+            console.log("\nDeleting Compressed File from /upload");
          }
       })
    );
@@ -69,12 +69,18 @@ const uploadAndDeleteTempFile = async (fileBuffer) => {
    return uplaodedFileInfo;
 }
 
+exports.uploadRollBackOnError = () => {
 
+}
 
 // this is a middleware
 exports.uploadFile = catchAsync(async (req, res, next) => {
+   
+   const isUploadPerformed = req.isFileUploaded.status; // true or false
    const uploadedFileData = await uploadAndDeleteTempFile(req.file.buffer);
    req.body.uploadedImageInformaiton = uploadedFileData;
+   req.isFileUploaded.status = true;
+   req.isFileUploaded.publicIdArr.push(uploadedFileData.public_id);
    next();
 })
 
@@ -110,7 +116,10 @@ exports.uploadMultipleFile = catchAsync(async (req, res, next) => {
          imageLink: uploadedFileData.secure_url
       }
       req.uploadedFilesArray.push(data);
+      req.isFileUploaded.publicIdArr.push(uploadedFileData.public_id);
    }
+   req.isFileUploaded.status = true;
+   
    next();
 })
 
