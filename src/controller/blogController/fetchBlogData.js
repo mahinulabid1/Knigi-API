@@ -56,3 +56,11 @@ exports.fetchArticleWithPignation = catchAsync( async ( req, res, next) =>{
 })
 
 
+exports.fetchArticleWithId = catchAsync( async (req, res, next) => {
+   const id = req.params.id;
+   const fetchData = await BlogModel.findById({id: id});
+   res.status(200).json({
+      status: 'Success!',
+      data: fetchData
+   })
+})

@@ -20,6 +20,7 @@ router.post(
 
 router.get('/allArticle', fetchData.fetchAllArticle);
 router.get('/allArticle/page/:pageNumber', fetchData.fetchArticleWithPignation)
+router.get('/article/:id', fetchData.fetchArticleWithId)
 
 
 router.patch(
