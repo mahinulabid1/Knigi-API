@@ -41,25 +41,22 @@ const UserSchema = new mongoose.Schema({
    imageData : {
       imageName: {
          type: String,
-         default: "no Image Uploaded",
+         default: "No Image Uploaded",
       },
-      // awsImagePath: {  // Corrected field name
-      //    type: String,
-      //    default: "no Image Uploaded",
-      // },
       imageLink: {
          type: String,
          default: "image link not specified!"
       },
       publicId : {
          type: String,
-         // required: [true, 'public ID is needded for an image!']
          default: 'publicId is not defined!'
       }
       
    },
    userRole : {
-      type: String
+      type: String,
+      enum : ['author', 'user'],
+      required: [true, 'User role not found!']
    }
 },
 

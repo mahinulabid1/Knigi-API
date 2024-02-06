@@ -1,3 +1,9 @@
+/**
+ * creating new data in mongodb, it doesn't upload picture while creating new data in MONGODB
+ * 
+ */
+
+
 const multer = require('multer');
 const fs = require('fs');
 const UserModel = require('@model/userModel');
@@ -33,14 +39,16 @@ exports.create = catchAsync( async ( req, res, next ) => {
    })
 })
 
-// unique user validation while creating new Record
+// unique user validation while creating new Record (entirely new)
 exports.validateUsername = catchAsync(async( req, res, next ) => {
    if(req.params.username) {
+      // if clients checks with req.params
       const username = req.params.username;
       const result = await UserModel.find({'username': username}, 'username');
       res.send(result);
    }
    else if(req.body.username) {
+      // it is used while creating new user
       const username = req.body.username;
       const result = await UserModel.find({'username': username}, 'username');
       if(result.length > 0 ) {
@@ -55,12 +63,6 @@ exports.validateUsername = catchAsync(async( req, res, next ) => {
 
 // upload picture seperately
 exports.uploadPicture = catchAsync( async( req, res, next ) => {
-   let id;
-   if(req.params.id) {
-      id = req.params.id 
-   } else {
-      return next(new AppError('ID is not defined', 400)) 
-   }
 
    let imageData = req.body.uploadedImageInformaiton; // handled by multer uploader
    console.log(imageData)
@@ -69,12 +71,12 @@ exports.uploadPicture = catchAsync( async( req, res, next ) => {
       imageLink: imageData.secure_url,
       publicId: imageData.public_id
    }
-   const result = await UserModel.findByIdAndUpdate(id, { imageData:processedData })
+   const result = await UserModel.findOneAndUpdate({username: req.tokenInfo}, { imageData:processedData })
    console.log(result)
    res.status(200).json({
       status: 200,
       message: 'update Successful!',
-      data: result
+      data: processedData
    })
 })
 

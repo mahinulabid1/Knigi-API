@@ -45,10 +45,12 @@ exports.loginVerify = catchAsync(async (req, res, next) => {
    // create jwt
    // send jwt as response
    let getUserData = await UserModel.find({ 'username': req.body.username }, "username password");
-   if (getUserData === null) return next(new AppError('Username of password didn\'t match'), 404);
+   if (getUserData === null) return next(new AppError('Username or password didn\'t match'), 404);
+
    const databasePassword = getUserData[0].password;
    const userInputPassword = req.body.password;
    const passwordVerify = verifyPass(userInputPassword, databasePassword);
+
    if (passwordVerify) {
       var jwt = await createJWT(req.body.username);
       console.log(jwt);
@@ -73,3 +75,31 @@ exports.protectUnwantedAccess = catchAsync(async (req, res, next) => {
 
 })
 
+exports.protectUserRole = catchAsync(async (req, res, next) =>{
+   if(req.body.userRole) {
+      return next(new AppError('You can not change user Role!', 400));
+   }
+   next();
+})
+
+
+exports.checkIfUserExistInDb = catchAsync(async (req, res, next) => {
+   const data = await UserModel.findOne({username: req.tokenInfo}, 'username imageData');
+   if(!data) {
+      next(new AppError('Username not found! JWT probably malformed!', 404));
+   }
+   else { 
+      req.userInfo = data;
+      next();
+   }
+})
+
+exports.preventPostInUserImage = catchAsync(async (req, res, next) =>{
+   // prevent user from sending post request to update user image
+   let imageNameData = req.userInfo.imageData.imageName;
+   imageNameData = imageNameData.toLowerCase();
+   if(imageNameData !== 'no image uploaded') {
+      return next(new AppError('User already uploaded user image! Please user PATCH request to update user image', 400));
+   }
+   next();
+})    

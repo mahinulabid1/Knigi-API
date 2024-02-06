@@ -10,7 +10,7 @@ const cloudinaryController = require('@cloudinary/controller')
 
 router.post(
    '/newUser', 
-   createNewUser.validateUsername,
+   createNewUser.validateUsername, // checks for username uniqueness by scanning database
    authController.passwordEncrypt,
    createNewUser.create
 );
@@ -18,7 +18,8 @@ router.post(
 router.patch(
    '/user', 
    authController.decodeJWT,
-   updateController.checkIfUserExistInDb,
+   authController.checkIfUserExistInDb,
+   authController.protectUserRole,
    updateController.updateMongoDbData
 )
 
@@ -35,15 +36,16 @@ router.get(
    getUser.single
 );
 
-// checks if the user name is valid or not
+// checks if the user name is valid or not in seperate request
 router.get('/validateUser/:username', createNewUser.validateUsername)
 
 // upload user image
 router.post(
-   '/userImage/:id', 
+   '/userImage', 
+   authController.decodeJWT,
+   authController.checkIfUserExistInDb,
+   authController.preventPostInUserImage,
    createNewUser.multerUpload,
-   // AWSController.uploadAWS,
-   // createNewUser.uploadPicture
    cloudinaryController.uploadFile,
    createNewUser.uploadPicture
 )
@@ -51,7 +53,7 @@ router.post(
 router.patch(
    '/userImage',
    authController.decodeJWT,
-   updateController.checkIfUserExistInDb,
+   authController.checkIfUserExistInDb,
    updateController.fetchPreviousUserImage,
    updateController.multerUpload,
    cloudinaryController.uploadFile,

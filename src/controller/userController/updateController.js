@@ -11,15 +11,7 @@ const upload = multer({
 
 exports.multerUpload = upload.single('userImage');
 
-exports.checkIfUserExistInDb = catchAsync(async (req, res, next) => {
-   const data = await userModel.findOne({username: req.tokenInfo}, 'username');
-   if(!data) {
-      next(new AppError('Username not found! JWT probably malformed!', 404));
-   }
-   else { 
-      next();
-   }
-})
+
 
 // ========================
 // MONGODB user data update
