@@ -87,7 +87,7 @@ exports.uploadFile = catchAsync(async (req, res, next) => {
 // middleware
 exports.deleteOldUserImage = catchAsync(async (req, res, next) => {
    const publicId = req.imagePublicId // processed by middleware
-   await deleteImage(publicId);
+   await exports.deleteImage(publicId);
    next();
 })
 
@@ -97,7 +97,7 @@ exports.deleteMultipleImage = catchAsync(async (req, res, next) => {
    
    // receives array just containing publicId in each index
    for (let i = 0; i < imagePublicIdArray.length; i++) {
-      await deleteImage(imagePublicIdArray[i]);
+      await exports.deleteImage(imagePublicIdArray[i]);
       if(imagePublicIdArray[i]) console.log(`Deleted image with Public id : ${imagePublicIdArray[i]}`); // if :dont console if image id is undefined
    }
    next();
