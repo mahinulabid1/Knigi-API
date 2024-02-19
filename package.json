@@ -44,8 +44,8 @@
     "@utils": "src/utils",
     "@dotenv": "./config.env",
     "@cloudinary": "./src/cloudinaryStorage",
-    "@lib":"./lib",
-    "@src" : "src"
+    "@lib": "./lib",
+    "@src": "src"
   },
   "_moduleDirectories": [
     "node_modules_custom"

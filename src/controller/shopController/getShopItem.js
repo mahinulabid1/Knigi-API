@@ -5,7 +5,7 @@ const AppError = require('@utils/appError');
 exports.all = catchAsync( async( req, res, next )=>{
    let result;
    if(req.query.limit) { // undefined retuns false, defined value returns true
-      const limit = query.limit;
+      const limit = req.query.limit;
       result = await shopModel.find( { } ).limit( limit );
    }else {
       result = await shopModel.find( { } );
@@ -49,3 +49,25 @@ exports.single = catchAsync( async (req, res, next) => {
    }
 })
 
+// exports.getDataWithLimit = catchAsync(async(req, res, next) => {
+//    const limit = req.query.limit;
+//    console.log()
+//    let data = await shopModel.find({}).limit(limit);
+//    console.log(data)
+
+//    // result validation
+//    if(Object.keys(data).length === 0) {
+//       res.status(200).json({
+//          status: 'success',
+//          data : 'No data found!'
+//       })
+//    } else {
+//       res.status(200).json({
+//          status: 'success',
+//          data : {
+//             data
+//          }
+//       })
+//    }
+
+// })
