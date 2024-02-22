@@ -45,17 +45,17 @@ exports.loginVerify = catchAsync(async (req, res, next) => {
    // create jwt
    // send jwt as response
    let getUserData = await UserModel.find({ 'username': req.body.username }, "username password");
-   if (getUserData === null) return next(new AppError('Username or password didn\'t match'), 404);
+   if (getUserData.length === 0 ) return next(new AppError('Username or password didn\'t match', 404));
 
    const databasePassword = getUserData[0].password;
    const userInputPassword = req.body.password;
-   const passwordVerify = verifyPass(userInputPassword, databasePassword);
+   const passwordVerify = await verifyPass(userInputPassword, databasePassword);
+
 
    if (passwordVerify) {
       var jwt = await createJWT(req.body.username);
-      console.log(jwt);
    } else {
-      next(new AppError('Username of password didn\'t match'), 404);
+      return next(new AppError('Username of password didn\'t match', 404));
    }
 
    res.status(200).json({
