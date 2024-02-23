@@ -55,7 +55,7 @@ exports.loginVerify = catchAsync(async (req, res, next) => {
    if (passwordVerify) {
       var jwt = await createJWT(req.body.username);
    } else {
-      return next(new AppError('Username of password didn\'t match', 404));
+      return next(new AppError('Username of password didn\'t match', 401));
    }
 
    res.status(200).json({
@@ -86,7 +86,7 @@ exports.protectUserRole = catchAsync(async (req, res, next) =>{
 exports.checkIfUserExistInDb = catchAsync(async (req, res, next) => {
    const data = await UserModel.findOne({username: req.tokenInfo}, 'username imageData');
    if(!data) {
-      next(new AppError('Username not found! JWT probably malformed!', 404));
+      next(new AppError('Username not found! JWT probably malformed!', 401));
    }
    else { 
       req.userInfo = data;
